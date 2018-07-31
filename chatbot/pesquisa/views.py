@@ -5,7 +5,7 @@ import requests
 from django.views.generic.base import TemplateView
 from django.views.generic import View
 from django.http import JsonResponse
-from pesquisa.models import Entrevista
+from pesquisa.models import Entrevista, ChatPerguntaVaga
 
 from chatterbot import ChatBot
 from chatterbot.utils import input_function, get_response_time
@@ -15,7 +15,7 @@ from chatterbot.ext.django_chatterbot.models import Conversation, Response
 
 
 class ChatterBotAppView(TemplateView):
-    template_name = 'chat_ant.html'
+    template_name = 'chat.html'
     entrevista = False
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -30,8 +30,7 @@ class ChatterBotAppView(TemplateView):
 
 
 class BotAppEntrevista(ChatterBotAppView):
-    template_name = 'chat.html'
-    entrevista = False
+    entrevista = True
 
 
 class AdaptadorLogico(LogicAdapter):
@@ -42,33 +41,44 @@ class AdaptadorLogico(LogicAdapter):
 
     def process(self, statement):
         from chatterbot.conversation import Statement
+        id_perfil_vaga = 1
+        chat_perguntas = ChatPerguntaVaga.objects.filter(perfil_vaga=id_perfil_vaga)
         # Let's base the confidence value on if the request was successful
-        if statement.text == 'Sim_1':
-            response_statement = Statement('Você atualmente trabalha?')
-            confidence = 1
+        print('chat_perguntas', len(chat_perguntas))
+        pergunta = 0
 
-        elif statement.text == 'Sim_2':
-            response_statement = Statement('Você tem experiência na área?')
+        if statement.text and len(chat_perguntas) > pergunta:
+            print ('pergunta', pergunta)
+            print('pergunta',chat_perguntas[pergunta])
+            pergunta + 1
+            response_statement = Statement('Você trabalha atualmente?')
             confidence = 1
-
-        elif statement.text == 'Sim_3':
-            response_statement = Statement('Oba')
-            response_statement.add_extra_data('objetiva','True')
-            confidence = 1
-
-        elif statement.text == 'Nao_1':
-            response_statement = Statement('Que pena')
-            confidence = 1
-
-        elif statement.text == 'Nao_2':
-            response_statement = Statement('Que pena')
-            confidence = 1
+        #
+        # elif statement.text == 'Sim_2':
+        #     pergunta += 1
+        #
+        #     print(pergunta)
+        #     print('pergunta',chat_perguntas[pergunta])
+        #     response_statement = Statement('Você tem experiência na área?')
+        #     confidence = 1
+        #
+        # elif statement.text == 'Sim_3':
+        #     response_statement = Statement('Oba')
+        #     response_statement.add_extra_data('objetiva','True')
+        #     confidence = 1
+        #
+        # elif statement.text == 'Nao_1':
+        #     response_statement = Statement('Que pena')
+        #     confidence = 1
+        #
+        # elif statement.text == 'Nao_2':
+        #     response_statement = Statement('Que pena')
+        #     confidence = 1
         else:
             response_statement = Statement('Fim da conversa')
             confidence = 0
 
         print ('RESPONSE',response_statement.extra_data)
-        response_statement.extra_data = '{"objetiva":"True"}'
         return confidence, response_statement
 
 

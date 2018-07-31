@@ -40,23 +40,24 @@
   });
 
   var chatlog = $('.js-chat-log');
-  var input = $('.js-text');
+  var input = $('.chat_text');
   var input_btn_left = $('#js-btn-left');
   var input_btn_right = $('#js-btn-right');
-  var botaoEnviar = $('.js-say');
+  var botaoEnviar = $('.chat_enviar');
   var chatNotificacao = $(".chat_notificacao");
   var count = 0
   var chat_input = $("#chat_input");
   function createRowUsuario(text) {
     var message = '<li class="">'
     + '<div class="message-entry container_chat">'
-    + '<img src="/static/inhegas.jpg" alt="Avatar" class="right" />'
+    + '<img src="/static/inhegas.jpg" alt="Avatar" class="right img-responsive img-circle" />'
     + `<p class="conversa" style="text-align:right;">${text}</p>`;
     + '</div>';
     + '</li>';
 
 
     chatlog.append(message);
+
   }
 
   function createRowBot(text) {
@@ -102,7 +103,10 @@
           chat_input.empty();
           chat_input.append(input_btn);
         }else {
-          var input_text = '<input type="text" id="input_text" class="form-control js-text"  placeholder="Digite sua mensagem..." />'
+          var input_text = '<input type="text" id="input_text" class="form-control chat_text col-md-6  col-xs-12"  placeholder="Digite sua mensagem..." />'
+          + '<button type="button" class="btn btn-info chat_enviar">'
+          + '<i class="fa fa-send-o"></i>'
+          + '</button>';
           chat_input.empty();
           chat_input.append(input_text);
           setFocusToTextBox();
@@ -113,12 +117,16 @@
         // Scroll to the bottom of the chat interface
         chatlog[0].scrollTop = chatlog[0].scrollHeight;
 
-        $('.js-text').keydown(function(event) {
+        $('.chat_text').keydown(function(event) {
           // Submit the input when the enter button is pressed
           if (event.keyCode == 13) {
-            submitInput($('.js-text').val(), $('.js-text').val());
+            submitInput($('.chat_text').val(), $('.chat_text').val());
 
           }
+        });
+
+        $('.chat_enviar').click(function() {
+          submitInput($('.chat_text').val(), $('.chat_text').val());
         });
 
         $('#js-btn-left').click(function(){
@@ -142,9 +150,10 @@
 
   }
 
-  botaoEnviar.click(function() {
-    submitInput(input.val(), input.val());
-  });
+
+    botaoEnviar.click(function() {
+      submitInput(input.val(), input.val());
+    });
 
   $('#js-btn-left').click(function(){
     count ++

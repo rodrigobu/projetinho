@@ -35,3 +35,14 @@ class Entrevista(models.Model):
 
     def __str__(self):
         return 'Entrevista is {}'.format(self.entrevista)
+
+class ChatPerguntaVaga(models.Model):
+    perfil_vaga = models.IntegerField()
+    pergunta = models.CharField(max_length=100)
+    tipo_pergunta = models.CharField(max_length=30)
+
+    class Meta:
+        db_table = 'chat_pergunta_vaga'
+
+    def __str__(self):
+        return self.pergunta
