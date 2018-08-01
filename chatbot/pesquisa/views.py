@@ -42,43 +42,47 @@ class AdaptadorLogico(LogicAdapter):
     def process(self, statement):
         from chatterbot.conversation import Statement
         id_perfil_vaga = 1
-        chat_perguntas = ChatPerguntaVaga.objects.filter(perfil_vaga=id_perfil_vaga)
-        # Let's base the confidence value on if the request was successful
-        print('chat_perguntas', len(chat_perguntas))
+        print ('statement', statement)
+        chat_perguntas = ChatPerguntaVaga.objects.filter(perfil_vaga=1).exclude(respondida=True)
+        chat_perguntas_qtd = chat_perguntas.count()
+        chat_perguntas = chat_perguntas.first()
         pergunta = 0
 
-        if statement.text and len(chat_perguntas) > pergunta:
-            print ('pergunta', pergunta)
-            print('pergunta',chat_perguntas[pergunta])
-            pergunta + 1
-            response_statement = Statement('Você trabalha atualmente?')
-            confidence = 1
-        #
-        # elif statement.text == 'Sim_2':
-        #     pergunta += 1
-        #
-        #     print(pergunta)
+        print (chat_perguntas.pergunta)
+        if statement.text:
+            response_statement = Statement(chat_perguntas.pergunta)
+            response_statement.extra_data = chat_perguntas.tipo_pergunta
+            chat_perguntas.respondida = True
+            chat_perguntas.save()
+        #     print ('pergunta', pergunta)
         #     print('pergunta',chat_perguntas[pergunta])
-        #     response_statement = Statement('Você tem experiência na área?')
+        #     pergunta + 1
+        #     response_statement = Statement(chat_perguntas)
+            confidence = 1
+
+        # if statement.text == 'Sim_1':
+        #     response_statement = Statement(chat_perguntas.pergunta)
+        #     response_statement.extra_data = chat_perguntas.tipo_pergunta
         #     confidence = 1
         #
-        # elif statement.text == 'Sim_3':
+        # elif statement.text == 'Sim_2':
         #     response_statement = Statement('Oba')
-        #     response_statement.add_extra_data('objetiva','True')
+        #     response_statement.add_extra_data('objetiva')
         #     confidence = 1
         #
         # elif statement.text == 'Nao_1':
         #     response_statement = Statement('Que pena')
+        #     response_statement.add_extra_data('objetiva')
+        #
         #     confidence = 1
         #
         # elif statement.text == 'Nao_2':
         #     response_statement = Statement('Que pena')
         #     confidence = 1
-        else:
-            response_statement = Statement('Fim da conversa')
-            confidence = 0
+        # else:
+        #     response_statement = Statement('Fim da conversa')
+        #     confidence = 0
 
-        print ('RESPONSE',response_statement.extra_data)
         return confidence, response_statement
 
 
@@ -214,6 +218,8 @@ class BotEntrevista(ChatterBotApiView):
                 conversations__id=conversation.id
             )
             for response in responses:
+                print ('RESP',response)
+
                 conversation.statements.append(response.statement.serialize())
                 conversation.statements.append(response.response.serialize())
         return conversation
