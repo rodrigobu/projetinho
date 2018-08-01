@@ -1,0 +1,4 @@
+chatbot/chatbot/__pycache__/*
+global_static/
+spa-static/
+*.pyc

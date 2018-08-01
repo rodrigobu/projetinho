@@ -83,7 +83,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'chatbot',
         'USER': 'postgres',
-        'PASSWORD': 'r12345',
+        'PASSWORD': 'postgres',
         'HOST': '127.0.0.1',
         'PORT': '5432',
     }
@@ -136,6 +136,7 @@ STATICFILES_DIRS = (
 PROJECT_ROOT = ospath.dirname(ospath.realpath(__file__))
 MEDIA_ROOT = ospath.join(PROJECT_ROOT, 'media')
 MEDIA_URL = '/media/'
+CHATTERBOT_TRAINING = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # ChatterBot settings
 
@@ -149,7 +150,7 @@ CHATTERBOT = {
     ],
     'trainer': 'chatterbot.trainers.ChatterBotCorpusTrainer',
     'training_data': [
-        '/home/rodrigo/projetinho/textos'
+        CHATTERBOT_TRAINING
     ],
 
 }
