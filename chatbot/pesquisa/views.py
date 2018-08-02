@@ -5,7 +5,7 @@ import requests
 from django.views.generic.base import TemplateView
 from django.views.generic import View
 from django.http import JsonResponse
-from pesquisa.models import Entrevista, ChatPerguntaVaga
+from pesquisa.models import Entrevista, ChatPerguntaVaga, ChatPerguntaResp
 
 from chatterbot import ChatBot
 from chatterbot.utils import input_function, get_response_time
@@ -17,13 +17,14 @@ from chatterbot.ext.django_chatterbot.models import Conversation, Response
 class ChatterBotAppView(TemplateView):
     template_name = 'chat.html'
     entrevista = False
+
+    def texto_inicial(self):
+        return 'Bom dia sou, CHATBOT. Como vai você?'
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['nome_chatbot'] = 'BOT LEME'
-        if self.entrevista:
-            context['texto_inicial'] = 'Bom dia sou, CHATBOT. Posso fazer algumas perguntas ?'
-        else:
-            context['texto_inicial'] = 'Bom dia sou, CHATBOT. Como vai você?'
+        context['texto_inicial'] = self.texto_inicial()
         context['entrevista'] = self.entrevista
 
         return context
@@ -31,6 +32,21 @@ class ChatterBotAppView(TemplateView):
 
 class BotAppEntrevista(ChatterBotAppView):
     entrevista = True
+
+    def texto_inicial(self):
+        cand_resp = ChatPerguntaResp()
+        chat_perguntas = ChatPerguntaVaga.objects.filter(perfil_vaga=1)
+        pergunta = []
+        for perg in chat_perguntas:
+            chat_resp = ChatPerguntaResp.objects.filter(cand_id=333, pergunta=perg.id)
+            print (chat_resp)
+            if not chat_resp.exists():
+                pergunta.append(perg)
+            else:
+                pergunta = []
+        if not pergunta:
+            return 'Todas as perguntas foram respondidas'
+        return pergunta[0].pergunta
 
 
 class AdaptadorLogico(LogicAdapter):
@@ -42,46 +58,36 @@ class AdaptadorLogico(LogicAdapter):
     def process(self, statement):
         from chatterbot.conversation import Statement
         id_perfil_vaga = 1
-        print ('statement', statement)
-        chat_perguntas = ChatPerguntaVaga.objects.filter(perfil_vaga=1).exclude(respondida=True)
-        chat_perguntas_qtd = chat_perguntas.count()
-        chat_perguntas = chat_perguntas.first()
-        pergunta = 0
+        id_cand = 333
+        chat_perguntas = ChatPerguntaVaga.objects.filter(perfil_vaga=1)
+        pergunta = []
+        confidence = 1
+        cand_resp = ChatPerguntaResp()
 
-        print (chat_perguntas.pergunta)
-        if statement.text:
-            response_statement = Statement(chat_perguntas.pergunta)
-            response_statement.extra_data = chat_perguntas.tipo_pergunta
-            chat_perguntas.respondida = True
-            chat_perguntas.save()
-        #     print ('pergunta', pergunta)
-        #     print('pergunta',chat_perguntas[pergunta])
-        #     pergunta + 1
-        #     response_statement = Statement(chat_perguntas)
-            confidence = 1
+        for perg in chat_perguntas:
+            chat_resp = ChatPerguntaResp.objects.filter(cand_id=id_cand, pergunta=perg.id)
+            if not chat_resp.exists():
+                pergunta.append(perg)
 
-        # if statement.text == 'Sim_1':
-        #     response_statement = Statement(chat_perguntas.pergunta)
-        #     response_statement.extra_data = chat_perguntas.tipo_pergunta
-        #     confidence = 1
-        #
-        # elif statement.text == 'Sim_2':
-        #     response_statement = Statement('Oba')
-        #     response_statement.add_extra_data('objetiva')
-        #     confidence = 1
-        #
-        # elif statement.text == 'Nao_1':
-        #     response_statement = Statement('Que pena')
-        #     response_statement.add_extra_data('objetiva')
-        #
-        #     confidence = 1
-        #
-        # elif statement.text == 'Nao_2':
-        #     response_statement = Statement('Que pena')
-        #     confidence = 1
-        # else:
-        #     response_statement = Statement('Fim da conversa')
-        #     confidence = 0
+        if pergunta:
+            chat_resp = ChatPerguntaResp.objects.filter(cand_id=id_cand, pergunta=pergunta[0])
+            if not chat_resp.exists():
+                cand_resp.vaga_id = id_perfil_vaga
+                cand_resp.cand_id = id_cand
+                cand_resp.resposta = statement.text
+                cand_resp.pergunta = pergunta[0]
+                cand_resp.save()
+
+                try:
+                    response_statement = Statement(pergunta[1].pergunta)
+                    response_statement.extra_data = pergunta[1].tipo_pergunta
+                except IndexError:
+                    response_statement = Statement("Todas as perguntas foram respondida")
+        else:
+            response_statement = Statement("Todas as perguntas foram respondida")
+
+        print ('Resposta', statement)
+        print ('Pergunta', response_statement)
 
         return confidence, response_statement
 
@@ -144,6 +150,7 @@ class ChatterBotApiView(View):
             conversation_id = self.chatbot().storage.create_conversation()
             request.session['conversation_id'] = conversation_id
             conversation.id = conversation_id
+
         if existing_conversation:
             responses = Response.objects.filter(
                 conversations__id=conversation.id
@@ -184,6 +191,7 @@ class ChatterBotApiView(View):
 
         conversation = self.get_conversation(request)
         response = self.chatbot().get_response(input_data, conversation.id)
+        print ("RESP", response)
         response_data = response.serialize()
 
         return JsonResponse(response_data, status=200)
@@ -211,15 +219,12 @@ class BotEntrevista(ChatterBotApiView):
 
         conversation = Obj()
 
-        print ('Conversation',Response.objects.all())
         existing_conversation = True
         if existing_conversation:
             responses = Response.objects.filter(
                 conversations__id=conversation.id
             )
             for response in responses:
-                print ('RESP',response)
-
                 conversation.statements.append(response.statement.serialize())
                 conversation.statements.append(response.response.serialize())
         return conversation
