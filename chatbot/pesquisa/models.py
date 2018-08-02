@@ -40,6 +40,7 @@ class ChatPerguntaVaga(models.Model):
     perfil_vaga = models.IntegerField()
     pergunta = models.CharField(max_length=100)
     tipo_pergunta = models.CharField(max_length=30)
+    respondida = models.BooleanField(default=False)
 
     class Meta:
         db_table = 'chat_pergunta_vaga'

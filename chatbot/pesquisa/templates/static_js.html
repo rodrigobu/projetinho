@@ -127,7 +127,6 @@
 
     $submit.done(function(statement) {
         createRowBot(statement.text);
-        var extra_data = Object.values(statement.extra_data)
         // Clear the input field
 
         if (extra_data.length) {
