@@ -5,7 +5,7 @@
 	{% include "static_css.html" %}
 
 
-
+<div>
 	<div class="footer-sticked-chat"><!-- Start: Footer Sticked Chat -->
 
 		<ul class="chat-conversations list-unstyled">
@@ -23,7 +23,7 @@
 			        	<span class="user-status is-online"></span>
 						<strong>{{ nome_chatbot }}</strong>
 						<i id="send-video-icon" class="fa-video-camera"></i>
-						<i id="send-audio-icon" class="fa-microphone"></i>
+						<i id="send-audio-icon" class="fa-microphone" onclick="createAudioSubmit(event);"></i>
 			        </a>
 			      <ul class="conversation-messages ps-scrollbar ps-scroll-down list-group chat-log js-chat-log">
 							<li>
@@ -37,7 +37,7 @@
 							<!-- <input type="text" class="form-control chat_text"  placeholder="Digite sua mensagem..." /> -->
 							{% if entrevista %}
 								<input type="button" id="js-btn-left" class="btn btn-success btn_esquerdo col-md-5" value="Sim"/>
-								<input type="button" id="js-btn-right" class=" btn btn-danger btn_direito col-md-5" value='Não'/>
+								<input type="button" id="js-btn-right" class=" btn btn-danger btn_direito col-md-5" value="Não"/>
 							{% else %}
 								<input type="text" class="form-control chat_text col-md-6 col-xs-12"  placeholder="Digite sua mensagem..." />
 								<button type="button" class="btn btn-info chat_enviar">
