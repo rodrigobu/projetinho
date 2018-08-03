@@ -19,12 +19,14 @@ class ChatterBotAppView(TemplateView):
     entrevista = False
 
     def texto_inicial(self):
-        return 'Bom dia sou, CHATBOT. Como vai você?'
+        return 'Bom dia sou, CHATBOT. Como vai você?', False
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        texto_inicial, tem_resposta = self.texto_inicial()
         context['nome_chatbot'] = 'BOT LEME'
-        context['texto_inicial'] = self.texto_inicial()
+        context['texto_inicial'] = texto_inicial
+        context['tem_resposta'] = tem_resposta
         context['entrevista'] = self.entrevista
 
         return context
@@ -32,7 +34,6 @@ class ChatterBotAppView(TemplateView):
 
 class BotAppEntrevista(ChatterBotAppView):
     entrevista = True
-
     def texto_inicial(self):
         cand_resp = ChatPerguntaResp()
         chat_perguntas = ChatPerguntaVaga.objects.filter(perfil_vaga=1)
@@ -45,8 +46,8 @@ class BotAppEntrevista(ChatterBotAppView):
             else:
                 pergunta = []
         if not pergunta:
-            return 'Todas as perguntas foram respondidas'
-        return pergunta[0].pergunta
+            return 'Todas as perguntas foram respondidas', chat_resp.exists()
+        return pergunta[0].pergunta, chat_resp.exists()
 
 
 class AdaptadorLogico(LogicAdapter):
@@ -96,7 +97,6 @@ class ChatterBotApiView(View):
     """
     Provide an API endpoint to interact with ChatterBot.
     """
-    logging.basicConfig(level=logging.INFO)
     def adaptadores(self):
         logic_adapters = [
             {
@@ -191,7 +191,6 @@ class ChatterBotApiView(View):
 
         conversation = self.get_conversation(request)
         response = self.chatbot().get_response(input_data, conversation.id)
-        print ("RESP", response)
         response_data = response.serialize()
 
         return JsonResponse(response_data, status=200)
