@@ -16,7 +16,7 @@
 				 </a>
 
 						{% if not tem_resposta %}
-							<span class="chat_notificacao badge badge-orange">1</span>
+							<span class="chat_notificacao badge badge-orange">&nbsp;</span>
 						{% endif %}
 			      <div class="conversation-window">
 			  <!-- User Info Link in header (used to close the chat bar) -->
@@ -37,6 +37,7 @@
 						</ul>
 						<div id="chat_input">
 							<!-- <input type="text" class="form-control chat_text"  placeholder="Digite sua mensagem..." /> -->
+							<strong></strong>
 							{% if entrevista %}
 								{% if tem_resposta %}
 									<input type="text" class="form-control chat_text col-md-6 col-xs-12"  readonly placeholder="Digite sua mensagem..." />
@@ -72,9 +73,14 @@
 		</ul>
 		<!-- Para quando ficar mobile -->
 		<a href="#" class="mobile-chat-toggle">
+			{% if not tem_resposta %}
+
+			{% endif %}
+
 			<i class="linecons-comment"></i>
-			<span class="num">1</span>
+			<!--<span class="num">1</span>
 			<span class="chat_notificacao badge badge-orange">1</span>
+		-->
 		</a>
 	<!-- End: Footer Sticked Chat -->
 	</div>
