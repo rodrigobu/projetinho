@@ -36,6 +36,8 @@
         }
 
         console.log(audio.id);
+        audio = document.querySelector(`[id='${audio.id}']`);
+        console.log(audio.parentNode);
         var parentNode = audio.parentElement;
 
         parentNode.innerHTML = '';
@@ -45,8 +47,6 @@
 
     function stopRecordingCallback() {
         let audio = window.audio;
-        console.log('sinisreo')
-        console.log(audio);
         audio = replaceAudio(URL.createObjectURL(recorder.getBlob()), audio);
         //btnStartRecording.disabled = false;
         setTimeout(function () {
