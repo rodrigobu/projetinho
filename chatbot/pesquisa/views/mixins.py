@@ -2,7 +2,6 @@ import json
 import logging
 import requests
 
-from django.views.generic.base import TemplateView
 from django.views.generic import View
 from django.http import JsonResponse
 from pesquisa.models import Entrevista, ChatPerguntaVaga, ChatPerguntaResp
@@ -12,85 +11,6 @@ from chatterbot.utils import input_function, get_response_time
 from chatterbot.logic import LogicAdapter
 from chatterbot.ext.django_chatterbot import settings
 from chatterbot.ext.django_chatterbot.models import Conversation, Response
-
-
-class ChatterBotAppView(TemplateView):
-    template_name = 'chat.html'
-    entrevista = False
-
-    def texto_inicial(self):
-        return 'Bom dia sou, CHATBOT. Como vai você?', False
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        texto_inicial, tem_resposta = self.texto_inicial()
-        context['nome_chatbot'] = 'BOT LEME'
-        context['texto_inicial'] = texto_inicial
-        context['tem_resposta'] = tem_resposta
-        context['entrevista'] = self.entrevista
-
-        return context
-
-
-class BotAppEntrevista(ChatterBotAppView):
-    entrevista = True
-    def texto_inicial(self):
-        cand_resp = ChatPerguntaResp()
-        chat_perguntas = ChatPerguntaVaga.objects.filter(perfil_vaga=1)
-        pergunta = []
-        for perg in chat_perguntas:
-            chat_resp = ChatPerguntaResp.objects.filter(cand_id=333, pergunta=perg.id)
-            print (chat_resp)
-            if not chat_resp.exists():
-                pergunta.append(perg)
-            else:
-                pergunta = []
-        if not pergunta:
-            return 'Todas as perguntas foram respondidas', chat_resp.exists()
-        return pergunta[0].pergunta, chat_resp.exists()
-
-
-class AdaptadorLogico(LogicAdapter):
-
-    def __init__(self, **kwargs):
-        super(AdaptadorLogico, self).__init__(**kwargs)
-
-
-    def process(self, statement):
-        from chatterbot.conversation import Statement
-        id_perfil_vaga = 1
-        id_cand = 333
-        chat_perguntas = ChatPerguntaVaga.objects.filter(perfil_vaga=1)
-        pergunta = []
-        confidence = 1
-        cand_resp = ChatPerguntaResp()
-
-        for perg in chat_perguntas:
-            chat_resp = ChatPerguntaResp.objects.filter(cand_id=id_cand, pergunta=perg.id)
-            if not chat_resp.exists():
-                pergunta.append(perg)
-
-        if pergunta:
-            chat_resp = ChatPerguntaResp.objects.filter(cand_id=id_cand, pergunta=pergunta[0])
-            if not chat_resp.exists():
-                cand_resp.vaga_id = id_perfil_vaga
-                cand_resp.cand_id = id_cand
-                cand_resp.resposta = statement.text
-                cand_resp.pergunta = pergunta[0]
-                cand_resp.save()
-
-                try:
-                    response_statement = Statement(pergunta[1].pergunta)
-                    response_statement.extra_data = pergunta[1].tipo_pergunta
-                except IndexError:
-                    response_statement = Statement("Todas as perguntas foram respondida")
-        else:
-            response_statement = Statement("Todas as perguntas foram respondida")
-
-        print ('Resposta', statement)
-        print ('Pergunta', response_statement)
-
-        return confidence, response_statement
 
 
 class ChatterBotApiView(View):
@@ -196,34 +116,83 @@ class ChatterBotApiView(View):
         return JsonResponse(response_data, status=200)
 
 
-class BotEntrevista(ChatterBotApiView):
-    def adaptadores(self):
-        logic_adapters = [{
-        # Adaptador logico, para respostas especificas.
-            'import_path': 'pesquisa.views.AdaptadorLogico',
-        }]
-        return logic_adapters
+class ChatVaga(LogicAdapter):
+    ''' Adaptador logico para especificos para vaga
+    '''
+    def __init__(self, **kwargs):
+        super(ChatVaga, self).__init__(**kwargs)
 
+    def tem_resposta(self, cand_id, pergunta):
+        ''' Verifica se o candidato já respondeu todas perguntas
+        '''
 
-    def get_conversation(self, request):
-        """
-        Return the conversation for the session if one exists.
-        Create a new conversation if one does not exist.
-        """
-        from chatterbot.ext.django_chatterbot.models import Conversation, Response
-        class Obj(object):
-            def __init__(self):
-                self.id = None
-                self.statements = []
+        try:
+            chat_resp = ChatPerguntaResp.objects.filter(
+                cand_id=cand_id,
+                pergunta=pergunta).exists()
+        except IndexError:
+            chat_resp = True
 
-        conversation = Obj()
+        return chat_resp
 
-        existing_conversation = True
-        if existing_conversation:
-            responses = Response.objects.filter(
-                conversations__id=conversation.id
-            )
-            for response in responses:
-                conversation.statements.append(response.statement.serialize())
-                conversation.statements.append(response.response.serialize())
-        return conversation
+    def verificacao_perguntas_vaga(self, statement, cand, vaga_id, pergunta):
+        ''' Verifica se existe pergunta para avaga e se o candidato,
+        já respondeu todas elas.
+        Caso não tenha respondido ira retornar a proxima pergunta.
+        '''
+        from chatterbot.conversation import Statement
+
+        chat_perguntas = ChatPerguntaVaga.objects.filter(perfil_vaga=vaga_id)
+
+        if chat_perguntas and not self.tem_resposta(cand, pergunta[0]) :
+
+            self.salvar_respostas(vaga_id, cand, statement.text, pergunta[0])
+            try:
+                response_statement = Statement(pergunta[1].pergunta)
+                response_statement.extra_data = pergunta[1].tipo_pergunta
+            except IndexError:
+                response_statement = Statement("Todas as perguntas foram respondida")
+        else:
+            response_statement = Statement("Todas as perguntas foram respondida")
+        return response_statement
+
+    def salvar_respostas(self, vaga, cand, resposta, pergunta):
+        ''' Processo de salvamento das respostas
+        '''
+        chat_resp = ChatPerguntaResp()
+        print ('pergunta', pergunta)
+        chat_resp.vaga_id = vaga
+        chat_resp.cand_id = cand
+        chat_resp.resposta = resposta
+        chat_resp.pergunta = pergunta
+        chat_resp.save()
+
+    def validacao_pergunta(self, statement, vaga_id=1, cand_id=2):
+        ''' Valida se tem pergunta para vaga selecionada
+        '''
+        pergunta = []
+        chat_perguntas = ChatPerguntaVaga.objects.filter(perfil_vaga=vaga_id)
+        chat_resp = ChatPerguntaResp()
+        confidence = 1
+
+        for perg in chat_perguntas:
+            if not self.tem_resposta(cand_id, perg):
+                pergunta.append(perg)
+
+        response_statement = self.verificacao_perguntas_vaga(
+            statement,
+            cand_id,
+            vaga_id,
+            pergunta
+        )
+        return confidence, response_statement
+
+    def process(self, statement):
+        ''' Executa o processo do chatbot.
+        '''
+        confidence, response_statement = self.validacao_pergunta(statement)
+
+        print ('Resposta', statement)
+        print ('Pergunta', response_statement)
+
+        return confidence, response_statement

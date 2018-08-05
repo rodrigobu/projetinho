@@ -16,13 +16,13 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.conf.urls import include, url
-from pesquisa.views import ChatterBotAppView, ChatterBotApiView, BotEntrevista, BotAppEntrevista
+from pesquisa.views import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     # path('', include('pesquisa.urls')),
-    url(r'^$', ChatterBotAppView.as_view(), name='main'),
-    url(r'^entrevista/$', BotAppEntrevista.as_view(), name='main'),
-    url(r'^api/chatterbot/$', ChatterBotApiView.as_view(), name='chatterbot'),
-    url(r'^api/chatterbot/entrevista/$', BotEntrevista.as_view(), name='chatterbot_entrevista'),
+    url(r'^$', views.ChatterBotAppView.as_view(), name='main'),
+    url(r'^entrevista/$', views.BotAppEntrevista.as_view(), name='entrevista'),
+    url(r'^api/chatterbot/$', views.BotGlobal.as_view(), name='chatterbot'),
+    url(r'^api/chatterbot/entrevista/$', views.BotEntrevista.as_view(), name='chatterbot_entrevista'),
 ]
