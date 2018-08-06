@@ -17,6 +17,8 @@ class ChatterBotApiView(View):
     """
     Provide an API endpoint to interact with ChatterBot.
     """
+    logging.basicConfig(level=logging.INFO)
+
     def adaptadores(self):
         logic_adapters = [
             {
@@ -36,13 +38,15 @@ class ChatterBotApiView(View):
             # Senão retonar uma resposta default.
             {
                 'import_path': 'chatterbot.logic.LowConfidenceAdapter',
-                'threshold': 0.7,
+                'threshold': 0.6,
                 'default_response': 'Não entendi'
             },
         ]
         return logic_adapters
 
     def chatbot(self):
+        '''
+        '''
         bot = ChatBot(
             **settings.CHATTERBOT,
             logic_adapters = self.adaptadores()
@@ -51,8 +55,8 @@ class ChatterBotApiView(View):
 
     def get_conversation(self, request):
         """
-        Return the conversation for the session if one exists.
-        Create a new conversation if one does not exist.
+        Retornar a conversa para a sessão, se houver. Crie uma nova conversa,
+        se não existir uma.
         """
         class Obj(object):
             def __init__(self):
@@ -84,7 +88,7 @@ class ChatterBotApiView(View):
 
     def get(self, request, *args, **kwargs):
         """
-        Return data corresponding to the current conversation.
+        Retorna os dados correspondente a conversa.
         """
 
         conversation = self.get_conversation(request)
@@ -119,6 +123,8 @@ class ChatterBotApiView(View):
 class ChatVaga(LogicAdapter):
     ''' Adaptador logico para especificos para vaga
     '''
+    vaga_id = ''
+    cand_id = ''
     def __init__(self, **kwargs):
         super(ChatVaga, self).__init__(**kwargs)
 
@@ -172,6 +178,7 @@ class ChatVaga(LogicAdapter):
         '''
         pergunta = []
         chat_perguntas = ChatPerguntaVaga.objects.filter(perfil_vaga=vaga_id)
+        print ('chat_perguntas', chat_perguntas)
         chat_resp = ChatPerguntaResp()
         confidence = 1
 
@@ -190,7 +197,7 @@ class ChatVaga(LogicAdapter):
     def process(self, statement):
         ''' Executa o processo do chatbot.
         '''
-        confidence, response_statement = self.validacao_pergunta(statement)
+        confidence, response_statement = self.validacao_pergunta(statement, self.vaga_id, self.cand_id)
 
         print ('Resposta', statement)
         print ('Pergunta', response_statement)
