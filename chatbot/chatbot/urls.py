@@ -22,6 +22,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     # path('', include('pesquisa.urls')),
     url(r'^$', views.ChatterBotAppView.as_view(), name='main'),
+    url(r'^save_audio$', views.SaveAudioBlob.as_view(), name='audio'),
     url(r'^entrevista/$', views.BotAppEntrevista.as_view(), name='entrevista'),
     url(r'^api/chatterbot/$', views.BotGlobal.as_view(), name='chatterbot'),
     url(r'^api/chatterbot/entrevista/$', views.BotEntrevista.as_view(), name='chatterbot_entrevista'),
