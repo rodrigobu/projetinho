@@ -24,6 +24,7 @@
   {% else %}
     var chatterbotUrl = '{% url "chatterbot" %}';
   {% endif%}
+  var saveAudioURL = '{% url "audio" %}';
   var csrftoken = Cookies.get('csrftoken');
   var date = new Date().toLocaleString();
 
@@ -64,12 +65,15 @@
     + '<div class="message-entry container_chat">'
     + '<img src="/static/inhegas.jpg" alt="Avatar" class="right img-responsive img-circle"/>';
     if (options) {
-      if (options.media === 'audio') {
+      if (options.media === 'audio' && options.el) {
         let audioId = new Date().getTime().toString();
-        message += `<div><audio id="${audioId}" controls autoplay></audio><div>`;
+        let audioDiv = document.createElement('div');
+        options.el.id = audioId;
+        audioDiv.appendChild(options.el);
+        message += audioDiv.outerHTML;
 
         chatlog.append(message);
-        return audioId;
+        return options.el;
       }
 
     } else {
@@ -90,35 +94,102 @@
     + '</div>';
     + '</li>';
 
-
     chatlog.append(message);
   }
 
+  function sendAudioBlob(blob) {
+
+    let formData = new FormData();
+    let filename = getFileName('mp3');
+
+    let file = new File([blob], filename, { type: 'audio/mp3', lastModified: Date.now() });
+    
+    formData.append('file', file);
+
+    $.ajax({
+      type: 'POST',
+      url: saveAudioURL,
+      data: formData,
+      global: false, /*Para cancelar o carregamento do ajax*/
+      processData: false,
+      contentType: false
+    })
+    .done(function (res) {
+      console.log(res);
+    })
+    .fail(function (err) {
+      console.log(err);
+    });
+  }
+
   function createInputAudio() {
+    /* Apaga o input de texto e cria os elementos de gravação de áudio */
+  
     let divAudio = document.createElement('div');
     let iconAudioRecording = document.createElement('i');
+    let btnStopRecording = document.createElement('button');
+    let btnSendAudioRecording = document.createElement('button');
+    let btnCancelAudioSending = document.createElement('button');
 
     iconAudioRecording.className = 'fa-microphone fa-blink';
+    iconAudioRecording.id = 'blinking-mic-icon';
+    btnStopRecording.id = 'stop-recording';
+    btnStopRecording.innerText = 'Stop';
+    btnStopRecording.onclick = function () {
+      StopRecording();
+      this.classList = 'hidden';
+      btnSendAudioRecording.className = '';
+      btnCancelAudioSending.className = '';
+      iconAudioRecording.classList.remove('fa-blink');
+    }
 
-    //iconAudioRecording.src = '/static/processing.gif';
+    btnSendAudioRecording.className = 'hidden';
+    btnSendAudioRecording.innerText = 'Enviar';
+    btnSendAudioRecording.id = 'send-audio';
+
+    btnCancelAudioSending.innerText = 'Cancelar';
+    btnCancelAudioSending.className = 'hidden';
+    btnCancelAudioSending.id = 'cancel-audio';
+    btnCancelAudioSending.onclick = function () {
+      let allUserMessages = document.querySelectorAll('div.message-entry.container_chat:not(.conv_bot)');
+      let lastUserMessage = allUserMessages[allUserMessages.length - 1];
+      let lastUserMessageLi = lastUserMessage.parentNode;
+      lastUserMessageLi.parentNode.removeChild(lastUserMessageLi);
+
+      input_text();
+      
+      let chatlog = $('.js-chat-log');
+      chatlog[0].scrollTop = chatlog[0].scrollHeight;
+
+      $('.chat_enviar').click(function () {
+        submitInput(input.val(), input.val());
+      });
+
+      $('.chat_text').keydown(function (event) {
+        // Submit the input when the enter button is pressed
+        if (event.keyCode == 13) {
+          submitInput(input.val(), input.val());
+        }
+      });
+
+    }
 
     divAudio.appendChild(iconAudioRecording);
+    divAudio.appendChild(btnStopRecording);
+    divAudio.appendChild(btnSendAudioRecording);
+    divAudio.appendChild(btnCancelAudioSending);
 
     chat_input.empty();
     chat_input.append(divAudio);
+    let chatlog = $('.js-chat-log');  
+    chatlog[0].scrollTop = chatlog[0].scrollHeight;
   }
 
   function createAudioSubmit(e) {
     if (!e) e = window.event;
     e.stopPropagation();
 
-    createInputAudio()
-
-    let audioId = createRowUsuario({ media: 'audio' });
-    let audio = document.getElementById(audioId);
-
-    StartRecording(audio);
-    setTimeout(StopRecording, 5000, audio);
+    StartRecording();
 
   }
 
@@ -193,10 +264,9 @@
 
   }
 
-
-    botaoEnviar.click(function() {
-      submitInput(input.val(), input.val());
-    });
+  botaoEnviar.click(function() {
+    submitInput(input.val(), input.val());
+  });
 
   $('#js-btn-left').click(function(){
     count ++

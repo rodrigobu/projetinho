@@ -27,28 +27,19 @@
         });
     }
 
-    function replaceAudio(src, audio) {
+    function createAudioElement(src) {
         var newAudio = document.createElement('audio');
-        newAudio.id = audio.id;
         newAudio.controls = true;
         if (src) {
             newAudio.src = src;
         }
 
-        console.log(audio.id);
-        audio = document.querySelector(`[id='${audio.id}']`);
-        console.log(audio.parentNode);
-        var parentNode = audio.parentElement;
-
-        parentNode.innerHTML = '';
-        parentNode.appendChild(newAudio);
         return newAudio
     }
 
     function stopRecordingCallback() {
-        let audio = window.audio;
-        audio = replaceAudio(URL.createObjectURL(recorder.getBlob()), audio);
-        //btnStartRecording.disabled = false;
+        audio = createAudioElement(URL.createObjectURL(recorder.getBlob()));
+        createRowUsuario({ media: 'audio', el: audio });        
         setTimeout(function () {
             if (!audio.paused) return;
             setTimeout(function () {
@@ -59,82 +50,70 @@
             audio.play();
         }, 300);
         audio.play();
-        //btnDownloadRecording.disabled = false;
-        if (isSafari) {
-            click(btnReleaseMicrophone);
-        }
+
+        $('#send-audio').click(function () {
+            console.log(recorder.getBlob());
+            sendAudioBlob(recorder.getBlob());
+        })
+
+        //if (isSafari) {
+        //    click(btnReleaseMicrophone);
+        //}
     }
     
     var isEdge = navigator.userAgent.indexOf('Edge') !== -1 && (!!navigator.msSaveOrOpenBlob || !!navigator.msSaveBlob);
     var isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
     var recorder; // globally accessible
     var microphone;
-    //var btnStartRecording = document.getElementById('btn-start-recording');
-    //var btnStopRecording = document.getElementById('btn-stop-recording');
-    //var btnReleaseMicrophone = document.querySelector('#btn-release-microphone');
-    //var btnDownloadRecording = document.getElementById('btn-download-recording');
 
-    function StartRecording(audio) {
-        window.audio = audio;
+    function StartRecording() {
         if (!microphone) {
             captureMicrophone(function (mic) {
                 microphone = mic;
                 if (isSafari) {
-                    audio = replaceAudio(null, audio);
-                    audio.muted = true;
-                    setSrcObject(microphone, audio);
-                    audio.play();
-                    //btnStartRecording.disabled = false;
-                    //btnStartRecording.style.border = '1px solid red';
-                    //btnStartRecording.style.fontSize = '150%';
                     alert('Please click startRecording button again. First time we tried to access your microphone. Now we will record it.');
                     return;
                 }
-                StartRecording(audio);
+                StartRecording();
             });
             return;
         }
-        audio = replaceAudio(null, audio);
-        audio.muted = true;
-        setSrcObject(microphone, audio);
-        audio.play();
+        // Conseguiu capturar o microfone
+        createInputAudio();
+
         var options = {
             type: 'audio',
             numberOfAudioChannels: isEdge ? 1 : 2,
             checkForInactiveTracks: true,
             bufferSize: 16384
         };
+
         if (navigator.platform && navigator.platform.toString().toLowerCase().indexOf('win') === -1) {
             options.sampleRate = 48000; // or 44100 or remove this line for default
         }
+
         if (recorder) {
             recorder.destroy();
             recorder = null;
         }
+
         recorder = RecordRTC(microphone, options);
         recorder.startRecording();
-        //btnStopRecording.disabled = false;
-        //btnDownloadRecording.disabled = true;
     };
 
-
-    function StopRecording (audio) {
-        //this.disabled = true;
-        console.log(audio);
+    function StopRecording () {
         recorder.stopRecording(stopRecordingCallback);
+        ReleaseMicrophone();
     };
-
 
     function ReleaseMicrophone () {
-        this.disabled = true;
-        //btnStartRecording.disabled = false;
         if (microphone) {
             microphone.stop();
             microphone = null;
         }
-        if (recorder) {
+        //if (recorder) {
             // click(btnStopRecording);
-        }
+        //}
     };
 
     function DownloadRecording () {

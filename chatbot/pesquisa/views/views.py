@@ -2,6 +2,10 @@ import json
 import requests
 
 from django.views.generic.base import TemplateView
+from django.views.generic import View
+from django.http import JsonResponse
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
 from pesquisa.models import ChatPerguntaVaga, ChatPerguntaResp
 from pesquisa.views.mixins import ChatterBotApiView, ChatVaga
 
@@ -66,3 +70,10 @@ class BotEntrevista(ChatterBotApiView):
             'import_path': 'pesquisa.views.views.ChatEntrenvista',
         }]
         return logic_adapters
+
+class SaveAudioBlob(View):
+
+    def post(self, request, *args, **kwargs):
+        file = request.FILES.get('file')
+        path = default_storage.save('tmp/oba.mp3', ContentFile(file.read()))
+        return JsonResponse({'status': 'ok'})
