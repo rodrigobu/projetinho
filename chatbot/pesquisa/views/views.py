@@ -66,6 +66,7 @@ class SaveAudioBlob(View):
 
     def post(self, request, *args, **kwargs):
         file = request.FILES.get('file')
+        print(file.name)
         path = default_storage.save('tmp/oba.mp3', ContentFile(file.read()))
         return JsonResponse({'status': 'ok'})
     
