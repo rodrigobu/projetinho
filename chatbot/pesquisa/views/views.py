@@ -6,6 +6,8 @@ from django.views.generic import View
 from django.http import JsonResponse
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.decorators import method_decorator
 from pesquisa.models import ChatPerguntaVaga, ChatPerguntaResp
 from pesquisa.views.mixins import ChatterBotApiView, ChatVaga
 
@@ -71,10 +73,10 @@ class BotEntrevista(ChatterBotApiView):
         }]
         return logic_adapters
 
+@method_decorator(csrf_exempt, name='dispatch') # Esta view não  necessita do csrf
 class SaveAudioBlob(View):
-
+    '''Para gravar os binários em arquivo'''
     def post(self, request, *args, **kwargs):
         file = request.FILES.get('file')
-        print(file.name)
         path = default_storage.save('tmp/oba.mp3', ContentFile(file.read()))
         return JsonResponse({'status': 'ok'})

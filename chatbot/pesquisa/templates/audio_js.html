@@ -1,6 +1,5 @@
 
 <script src="/static/RecordRTC.js"></script>
-<script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
 <script>
     //var audio = document.querySelector('audio');
     function captureMicrophone(callback) {
@@ -28,7 +27,7 @@
     }
 
     function createAudioElement(src) {
-        var newAudio = document.createElement('audio');
+        let newAudio = document.createElement('audio');
         newAudio.controls = true;
         if (src) {
             newAudio.src = src;
