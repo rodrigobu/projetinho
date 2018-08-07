@@ -1,5 +1,4 @@
 import json
-import logging
 import requests
 
 from django.views.generic.base import TemplateView
@@ -8,7 +7,7 @@ from django.http import JsonResponse
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from pesquisa.models import ChatPerguntaVaga, ChatPerguntaResp
-from pesquisa.views.mixins import ChatterBotApiView
+from pesquisa.views.mixins import ChatterBotApiView, ChatVaga
 
 
 class ChatterBotAppView(TemplateView):
@@ -16,12 +15,13 @@ class ChatterBotAppView(TemplateView):
     entrevista = False
 
     def texto_inicial(self):
-        return 'Bom dia sou, CHATBOT. Como vai você?', False
+        return '''Olá, eu sou o CHATBOT, o chatbot da Leme Consultoria. \n
+        Estou aqui para auxiliar sua experiencia.''', False
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         texto_inicial, tem_resposta = self.texto_inicial()
-        context['nome_chatbot'] = 'BOT LEME'
+        context['nome_chatbot'] = 'CHATBOT'
         context['texto_inicial'] = texto_inicial
         context['tem_resposta'] = tem_resposta
         context['entrevista'] = self.entrevista
@@ -31,13 +31,15 @@ class ChatterBotAppView(TemplateView):
 
 class BotAppEntrevista(ChatterBotAppView):
     entrevista = True
+    vaga = 1
+    cand = 333
     def texto_inicial(self):
         cand_resp = ChatPerguntaResp()
-        chat_perguntas = ChatPerguntaVaga.objects.filter(perfil_vaga=1)
+        chat_perguntas = ChatPerguntaVaga.objects.filter(perfil_vaga=self.vaga)
         pergunta = []
         if chat_perguntas:
             for perg in chat_perguntas:
-                chat_resp = ChatPerguntaResp.objects.filter(cand_id=333, pergunta=perg.id)
+                chat_resp = ChatPerguntaResp.objects.filter(cand_id=self.cand, pergunta=perg.id)
                 print (chat_resp)
                 if not chat_resp.exists():
                     pergunta.append(perg)
@@ -54,11 +56,18 @@ class BotGlobal(ChatterBotApiView):
     '''
     pass
 
+class ChatEntrenvista(ChatVaga):
+    ''' Class extendida do Adaptador Logico, só precisa sobrescrever vaga_id e
+        cand_id.
+    '''
+    vaga_id = 3
+    cand_id = 333
+
 class BotEntrevista(ChatterBotApiView):
     def adaptadores(self):
         logic_adapters = [{
         # Adaptador logico, para respostas especificas.
-            'import_path': 'pesquisa.views.mixins.ChatVaga',
+            'import_path': 'pesquisa.views.views.ChatEntrenvista',
         }]
         return logic_adapters
 
@@ -69,4 +78,3 @@ class SaveAudioBlob(View):
         print(file.name)
         path = default_storage.save('tmp/oba.mp3', ContentFile(file.read()))
         return JsonResponse({'status': 'ok'})
-    
