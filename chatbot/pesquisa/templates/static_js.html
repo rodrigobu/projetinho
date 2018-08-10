@@ -16,7 +16,7 @@
 <script src="{% static 'js/carregando/jquery.blockUI.js' %}"></script>
 <script src="{% static 'js/carregando/carregando.js' %}"></script>
 
-{% include "audio_js.html" %}
+{% include "audio-video_js.html" %}
 
 <script>
   {% if entrevista %}
@@ -24,7 +24,7 @@
   {% else %}
     var chatterbotUrl = '{% url "chatterbot" %}';
   {% endif%}
-  var saveAudioURL = '{% url "audio" %}';
+  var saveMediaURL = '{% url "audio" %}';
   var csrftoken = Cookies.get('csrftoken');
   var date = new Date().toLocaleString();
 
@@ -50,7 +50,7 @@
   var count = 0
   var chat_input = $("#chat_input");
 
-  var input_text = function() {
+  const input_text = function() {
     let _input_text =
     '<input type="text" id="input_text" class="form-control chat_text col-md-6  col-xs-12"  placeholder="Digite sua mensagem..." />'
     + '<button type="button" class="btn btn-info chat_enviar">'
@@ -58,6 +58,23 @@
     + '</button>';
     chat_input.empty();
     chat_input.append(_input_text);
+    setFocusToTextBox();
+  }
+
+  const initEventsInputText = function () {
+    let chatlog = $('.js-chat-log');
+    chatlog[0].scrollTop = chatlog[0].scrollHeight;
+
+    $('.chat_enviar').click(function () {
+      submitInput(input.val(), input.val());
+    });
+
+    $('.chat_text').keydown(function (event) {
+      // Submit the input when the enter button is pressed
+      if (event.keyCode == 13) {
+        submitInput(input.val(), input.val());
+      }
+    });
   }
 
   function createRowUsuario(options, text='') {
@@ -65,14 +82,26 @@
     + '<div class="message-entry container_chat">'
     + '<img src="/static/inhegas.jpg" alt="Avatar" class="right img-responsive img-circle"/>';
     if (options) {
+      let elementId = new Date().getTime().toString();
+
       if (options.media === 'audio' && options.el) {
-        let audioId = new Date().getTime().toString();
         let audioDiv = document.createElement('div');
-        options.el.id = audioId;
+        options.el.id = elementId;
         audioDiv.appendChild(options.el);
         message += audioDiv.outerHTML;
 
         chatlog.append(message);
+        if (chatlog.length) chatlog[0].scrollTop = chatlog[0].scrollHeight;
+        return options.el;
+      }
+
+      if (options.media === 'video' && options.el) {
+        let videoDiv = document.createElement('div');
+        videoDiv.appendChild(options.el);
+        message += videoDiv.outerHTML;
+
+        chatlog.append(message);
+        if (chatlog.length) chatlog[0].scrollTop = chatlog[0].scrollHeight;
         return options.el;
       }
 
@@ -97,18 +126,33 @@
     chatlog.append(message);
   }
 
-  function sendAudioBlob(blob) {
+  function sendMediaBlob(type, blob) {
+    if (!type || !blob) return null;
+    let typeText;
+    let extension;
+    let mime;
+
+    if (type === 'audio') {
+      typeText = 'áudio';
+      extension = 'mp3';
+      mime = 'audio/mp3';
+    } else if (type === 'video') {
+      typeText = 'vídeo';
+      extension = 'mp4';
+      mime = 'video/mp4';
+    }
 
     let formData = new FormData();
-    let filename = getFileName('mp3');
+    let filename = getFileName(extension);
+    let file = new File([blob], filename, { type: mime, lastModified: Date.now() });
 
-    let file = new File([blob], filename, { type: 'audio/mp3', lastModified: Date.now() });
+    let msgReceived = `Recebi o seu ${typeText}!`;
     
     formData.append('file', file);
 
     $.ajax({
       type: 'POST',
-      url: saveAudioURL,
+      url: saveMediaURL,
       data: formData,
       global: false, /*Para cancelar o carregamento do ajax*/
       processData: false,
@@ -116,73 +160,34 @@
     })
     .done(function (res) {
       console.log(res);
+      if (res.status === 'ok') {
+        createRowBot(msgReceived);
+        input_text();
+        initEventsInputText();
+      }
     })
     .fail(function (err) {
       console.log(err);
     });
   }
 
-  function createInputAudio() {
-    /* Apaga o input de texto e cria os elementos de gravação de áudio */
-  
-    let divAudio = document.createElement('div');
-    let iconAudioRecording = document.createElement('i');
-    let btnStopRecording = document.createElement('button');
-    let btnSendAudioRecording = document.createElement('button');
-    let btnCancelAudioSending = document.createElement('button');
-
-    iconAudioRecording.className = 'fa-microphone fa-blink';
-    iconAudioRecording.id = 'blinking-mic-icon';
-    btnStopRecording.id = 'stop-recording';
-    btnStopRecording.innerText = 'Stop';
-    btnStopRecording.onclick = function () {
-      StopRecording();
-      this.classList = 'hidden';
-      btnSendAudioRecording.className = '';
-      btnCancelAudioSending.className = '';
-      iconAudioRecording.classList.remove('fa-blink');
-    }
-
-    btnSendAudioRecording.className = 'hidden';
-    btnSendAudioRecording.innerText = 'Enviar';
-    btnSendAudioRecording.id = 'send-audio';
-
-    btnCancelAudioSending.innerText = 'Cancelar';
-    btnCancelAudioSending.className = 'hidden';
-    btnCancelAudioSending.id = 'cancel-audio';
-    btnCancelAudioSending.onclick = function () {
+  const cancelClick = function () {
       let allUserMessages = document.querySelectorAll('div.message-entry.container_chat:not(.conv_bot)');
       let lastUserMessage = allUserMessages[allUserMessages.length - 1];
       let lastUserMessageLi = lastUserMessage.parentNode;
       lastUserMessageLi.parentNode.removeChild(lastUserMessageLi);
 
+      createRowBot('Você cancelou o envio!');
+
       input_text();
-      
-      let chatlog = $('.js-chat-log');
-      chatlog[0].scrollTop = chatlog[0].scrollHeight;
-
-      $('.chat_enviar').click(function () {
-        submitInput(input.val(), input.val());
-      });
-
-      $('.chat_text').keydown(function (event) {
-        // Submit the input when the enter button is pressed
-        if (event.keyCode == 13) {
-          submitInput(input.val(), input.val());
-        }
-      });
-
+      initEventsInputText();
     }
+  
+  function createVideoSubmit(e) {
+    if (!e) e = window.event;
+    e.stopPropagation();
 
-    divAudio.appendChild(iconAudioRecording);
-    divAudio.appendChild(btnStopRecording);
-    divAudio.appendChild(btnSendAudioRecording);
-    divAudio.appendChild(btnCancelAudioSending);
-
-    chat_input.empty();
-    chat_input.append(divAudio);
-    let chatlog = $('.js-chat-log');  
-    chatlog[0].scrollTop = chatlog[0].scrollHeight;
+    startVideoRecording();
   }
 
   function createAudioSubmit(e) {
@@ -190,7 +195,6 @@
     e.stopPropagation();
 
     StartRecording();
-
   }
 
   function submitInput(input_val, input_resp) {

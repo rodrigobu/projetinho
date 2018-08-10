@@ -86,12 +86,14 @@ i#send-audio-icon {
   margin-right: 10px;
 }
 
-audio {
+audio,
+video {
   width: 100%;
   margin-top: 10px;
 }
 
-i#blinking-mic-icon {
+i#blinking-mic-icon
+i#blinking-cam-icon {
   font-size: 20px;
   margin: 10px;
 }
@@ -110,6 +112,19 @@ i#blinking-mic-icon {
   -ms-animation: fa-blink 1s linear infinite;
   -o-animation: fa-blink 1s linear infinite;
   animation: fa-blink 1s linear infinite;
+}
+
+button.stop-recording {
+  margin: 5px 10px 5px 10px;
+}
+
+button#send-audio,
+button#cancel-audio,
+button#send-video,
+button#cancel-video {
+  margin: 3px 6px 5px 6px;
+  font-size: 13px;
+  padding: 4px 8px 4px 8px;
 }
 
 </style>

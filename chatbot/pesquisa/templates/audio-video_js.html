@@ -1,9 +1,9 @@
 
 <script src="/static/RecordRTC.js"></script>
 <script>
-    //var audio = document.querySelector('audio');
+    var chat_input = $("#chat_input");
+
     function captureMicrophone(callback) {
-        //btnReleaseMicrophone.disabled = false;
         if (microphone) {
             callback(microphone);
             return;
@@ -36,6 +36,101 @@
         return newAudio
     }
 
+    function createInputAudio() {
+        /* Apaga o input de texto e cria os elementos de gravação de áudio */
+
+        let divAudio = document.createElement('div');
+        let iconAudioRecording = document.createElement('i');
+        let btnStopRecording = document.createElement('button');
+        let btnSendAudioRecording = document.createElement('button');
+        let btnCancelAudioSending = document.createElement('button');
+
+        iconAudioRecording.className = 'fa-microphone fa-blink';
+        iconAudioRecording.id = 'blinking-mic-icon';
+        btnStopRecording.id = 'stop-recording';
+        btnStopRecording.className = 'stop-recording';
+        btnStopRecording.innerText = 'Stop';
+        btnStopRecording.onclick = function () {
+            StopRecording();
+            this.classList = 'hidden';
+            btnSendAudioRecording.className = 'btn btn-success btn-icon';
+            btnCancelAudioSending.className = 'btn btn-icon';
+            iconAudioRecording.classList.remove('fa-blink');
+        }
+
+        btnSendAudioRecording.id = 'send-audio';
+        btnSendAudioRecording.innerText = 'Enviar';
+        btnSendAudioRecording.className = "hidden";
+
+        btnCancelAudioSending.innerText = 'Cancelar';
+        btnCancelAudioSending.className = 'hidden';
+        btnCancelAudioSending.id = 'cancel-audio';
+        btnCancelAudioSending.onclick = cancelClick
+
+        divAudio.appendChild(iconAudioRecording);
+        divAudio.appendChild(btnStopRecording);
+        divAudio.appendChild(btnSendAudioRecording);
+        divAudio.appendChild(btnCancelAudioSending);
+
+        chat_input.empty();
+        chat_input.append(divAudio);
+        let chatlog = $('.js-chat-log');
+        chatlog[0].scrollTop = chatlog[0].scrollHeight;
+    }
+
+    function createInputVideo() {
+    /* Apaga o input de texto e cria os elementos de gravação de vídeo */
+
+        let divVideo = document.createElement('div');
+        let iconVideoRecording = document.createElement('i');
+        let btnStopVideoRecording = document.createElement('button');
+        let btnSendVideoRecording = document.createElement('button');
+        let btnCancelVideoSending = document.createElement('button');
+
+        iconVideoRecording.className = 'fa-video-camera fa-blink';
+        iconVideoRecording.id = 'blinking-cam-icon';
+        btnStopVideoRecording.id = 'stop-video-recording';
+        btnStopVideoRecording.className = 'stop-recording';
+        btnStopVideoRecording.innerText = 'Stop';
+        btnStopVideoRecording.onclick = function () {
+            stopVideoRecording();
+            this.classList = 'hidden';
+            btnSendVideoRecording.className = 'btn btn-success btn-icon';
+            btnCancelVideoSending.className = 'btn btn-icon';
+            iconVideoRecording.classList.remove('fa-blink');
+        }
+
+        btnSendVideoRecording.id = 'send-video';
+        btnSendVideoRecording.innerText = 'Enviar';
+        btnSendVideoRecording.className = "hidden";
+
+        btnCancelVideoSending.innerText = 'Cancelar';
+        btnCancelVideoSending.className = 'hidden';
+        btnCancelVideoSending.id = 'cancel-video';
+        btnCancelVideoSending.onclick = cancelClick
+
+        divVideo.appendChild(iconVideoRecording);
+        divVideo.appendChild(btnStopVideoRecording);
+        divVideo.appendChild(btnSendVideoRecording);
+        divVideo.appendChild(btnCancelVideoSending);
+
+        chat_input.empty();
+        chat_input.append(divVideo);
+        let chatlog = $('.js-chat-log');
+        chatlog[0].scrollTop = chatlog[0].scrollHeight;
+
+        
+
+        let video = document.createElement('video');
+        video.id = new Date().getTime().toString();
+        video.controls = true;
+        video.autoplay = true;
+        divVideo.appendChild(video);
+
+        return video.id;
+
+    }
+
     function stopRecordingCallback() {
         audio = createAudioElement(URL.createObjectURL(recorder.getBlob()));
         createRowUsuario({ media: 'audio', el: audio });        
@@ -52,12 +147,8 @@
 
         $('#send-audio').click(function () {
             console.log(recorder.getBlob());
-            sendAudioBlob(recorder.getBlob());
+            sendMediaBlob('audio', recorder.getBlob());
         })
-
-        //if (isSafari) {
-        //    click(btnReleaseMicrophone);
-        //}
     }
     
     var isEdge = navigator.userAgent.indexOf('Edge') !== -1 && (!!navigator.msSaveOrOpenBlob || !!navigator.msSaveBlob);
@@ -183,3 +274,60 @@
         }
     }
 </script>
+
+<script>
+    var videoRecorder;
+
+    function captureCameraVideo(callback) {
+        navigator.mediaDevices.getUserMedia({ audio: true, video: true }).then(function (camera) {
+            callback(camera);
+        }).catch(function (error) {
+            alert('Não foi possível capturar sua câmera. Atualize seu navegador para evitar problemas de compatibilidade.');
+            console.error(error);
+        });
+    }
+
+    function stopVideoRecording() {
+        videoRecorder.stopRecording(stopRecordingVideoCallback);
+    }
+
+    function stopRecordingVideoCallback() {
+        let videoBlob = videoRecorder.getBlob();
+        window.video.src = video.srcObject = null;
+        window.video.src = URL.createObjectURL(videoBlob);
+        window.video.play();
+        videoRecorder.camera.stop();
+
+        $('#send-video').click(function () {
+            console.log(videoBlob);
+            sendMediaBlob('video', videoBlob);
+        });
+
+        videoRecorder.destroy();
+        videoRecorder = null;
+    }
+
+
+    function startVideoRecording() {
+        
+        captureCameraVideo(function (camera) {
+            window.video = document.getElementById(createInputVideo());
+            setSrcObject(camera, window.video);
+            window.video = createRowUsuario({ media: 'video', el: video });
+            window.video.play();
+            
+            videoRecorder = RecordRTC(camera, {
+                type: 'video'
+            });
+            
+            console.log("videoRecorder: ");
+            console.log(videoRecorder);
+
+            videoRecorder.startRecording();
+
+            // release camera on stopRecording
+            videoRecorder.camera = camera;
+        });
+    }
+</script>
+

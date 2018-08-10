@@ -52,7 +52,7 @@ class BotAppEntrevista(ChatterBotAppView):
             return pergunta[0].pergunta, chat_resp.exists()
         return 'Todas as perguntas foram respondidas', False
 
-
+@method_decorator(csrf_exempt, name='dispatch') 
 class BotGlobal(ChatterBotApiView):
     ''' Class extendida do chatbot
     '''
@@ -78,5 +78,11 @@ class SaveAudioBlob(View):
     '''Para gravar os binários em arquivo'''
     def post(self, request, *args, **kwargs):
         file = request.FILES.get('file')
-        path = default_storage.save('tmp/oba.mp3', ContentFile(file.read()))
+        if file.name.endswith('mp3'):
+            cur_fname = 'oba.mp3'
+        elif file.name.endswith('mp4'):
+            cur_fname = 'oba.mp4'
+        
+        path = default_storage.save('tmp/' + cur_fname, ContentFile(file.read()))
+
         return JsonResponse({'status': 'ok'})
