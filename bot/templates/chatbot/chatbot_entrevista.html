@@ -1,0 +1,67 @@
+<div>
+	<div class="footer-sticked-chat col-md-12" style="left:30%;">
+		<!-- Start: Footer Sticked Chat -->
+
+		<ul class="chat-conversations list-unstyled">
+			<li id="sample-chat-window" class='open'>
+
+				<a class="chat-user" style="font-size: 1.2em;">
+			   <span class="user-status is-online"></span>
+					<strong>
+						<p style="font-size: 1.2em;">{{ nome_chatbot }}</p>
+					</strong>
+ 				</a>
+
+				{% if not tem_resposta %}
+				<span class="chat_notificacao badge badge-orange">&nbsp;</span>
+				{% endif %}
+
+				<div class="conversation-window" style="width: 275%;">
+					<!-- User Info Link in header (used to close the chat bar) -->
+					<div class="chatbot-leme div-primary">
+						<i id="send-video-icon" class="hidden fa-video-camera" onclick="createVideoSubmit(event);"></i>
+						<i id="send-audio-icon" class="hidden fa-microphone" onclick="createAudioSubmit(event);" style="font-size: 14px;"></i>
+						{# <span class="user-status is-online"></span> #}
+						<strong style="font-size: 1.2em;">{{ nome_chatbot }}</strong>
+					</div>
+
+					<ul class="conversation-messages ps-scrollbar ps-scroll-down list-group chat-log js-chat-log">
+						<li>
+							<div class="message-entry container_chat_ent conv_bot" style="font-size: 1.2em;">
+								{% if vaga.resp_selecao %}
+								<img src="{% url 'admin.usuario.foto.download' vaga.resp_selecao.id %}" alt="Avatar" class="left img-responsive" />
+									{% endif %}
+								<p class="conversa_entrevista">{{ texto_inicial|safe }}</p>
+							</div>
+						</li>
+					</ul>
+
+					<div id="chat_input" class="chat_input">
+
+						{% if is_alternativa %}
+							{% if alternativas %}
+
+							{% for e in alternativas %}
+							<input type="button" class="btn btn-primary js-btn-alternativa col-md-2 col-xs-12" value="{{ e.1 }}" title="{{ e.0 }}" onclick="responder_alternativa(this)"/>
+							{% endfor %}
+
+							{% else %}
+
+							<input type="button" class="btn btn-success js-btn-alternativa col-md-5 col-xs-5" value="{{ TEXTOS.sim }}"/>
+							<input type="button" class="btn btn-danger js-btn-alternativa col-md-5 col-xs-5" value="{{ TEXTOS.nao }}">
+
+							{% endif %}
+						{% else %}
+						<input type="text" class="form-control chat_text chat_text_entrevista col-md-6 col-xs-12"  placeholder="{{ TEXTOS.digite_sua_resposta }}..." />
+						<button type="button" class="btn btn-info chat_enviar"><i class="fa fa-send-o"></i></button>
+						{% endif %}
+
+					</div>
+				</div>
+
+			</li>
+		</ul>
+		<!-- Para quando ficar mobile -->
+		<!-- End: Footer Sticked Chat -->
+	</div>
+</div>

@@ -1,0 +1,416 @@
+{% load i18n %}
+{% load static %}
+
+{% include "chatbot/audio-video_js.html" %}
+
+<script>
+
+  var chatterbotUrl = '{% url "chatbot.bot_global" %}';
+
+  var saveMediaURL = "{% url 'chatbot.audio_video' %}";
+  var csrftoken = Cookies.get('csrftoken');
+  var date = new Date().toLocaleString();
+
+  function csrfSafeMethod(method) {
+    // these HTTP methods do not require CSRF protection
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+  }
+
+  $.ajaxSetup({
+    beforeSend: function(xhr, settings) {
+      if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+        xhr.setRequestHeader("X-CSRFToken", csrftoken);
+      }
+    }
+  });
+
+  var chatlog = $('.js-chat-log');
+  var input = $('.chat_text');
+  var input_btn_left = $('#js-btn-left');
+  var input_btn_right = $('#js-btn-right');
+  var botaoEnviar = $('.chat_enviar');
+  var chatNotificacao = $(".chat_notificacao");
+  var chat_input = $("#chat_input");
+
+  const input_text = function() {
+    let _input_text =
+    '<input type="text" id="input_text" class="form-control chat_text col-md-6  col-xs-12"  placeholder="Digite sua mensagem..." />'
+    + '<button type="button" class="btn btn-info chat_enviar">'
+    + '<i class="fa fa-send-o"></i>'
+    + '</button>';
+    chat_input.empty();
+    chat_input.append(_input_text);
+    setFocusToTextBox();
+  }
+
+  const initEventsInputText = function () {
+    let chatlog = $('.js-chat-log');
+    chatlog[0].scrollTop = chatlog[0].scrollHeight;
+
+    $('.chat_enviar').click(function () {
+      submitInput(input.val(), input.val());
+    });
+
+    $('.chat_text').keydown(function (event) {
+      // Submit the input when the enter button is pressed
+      if (event.keyCode == 13) {
+        submitInput(input.val(), input.val());
+      }
+    });
+  }
+
+  function createRowUsuario(options, text='') {
+    var message = '<li class="">'
+    + '<div class="message-entry container_chat">'
+    + '<img src="/media/images/sem_foto.png" alt="Avatar" class="right img-responsive img-circle"/>';
+    if (options) {
+      let elementId = new Date().getTime().toString();
+
+      if (options.media === 'audio' && options.el) {
+        let audioDiv = document.createElement('div');
+        options.el.id = elementId;
+        audioDiv.appendChild(options.el);
+        message += audioDiv.outerHTML;
+
+        chatlog.append(message);
+        if (chatlog.length) chatlog[0].scrollTop = chatlog[0].scrollHeight;
+        return options.el;
+      }
+
+      if (options.media === 'video' && options.el) {
+        let videoDiv = document.createElement('div');
+        videoDiv.appendChild(options.el);
+        message += videoDiv.outerHTML;
+
+        chatlog.append(message);
+        if (chatlog.length) chatlog[0].scrollTop = chatlog[0].scrollHeight;
+        return options.el;
+      }
+
+    } else {
+      message += `<p class="conversa" style="text-align:right;">${text}</p>`
+      + '</div>';
+      + '</li>';
+    }
+
+    chatlog.append(message);
+
+  }
+
+  function createRowBot(text) {
+    var message = '<li class="">'
+    + '<div class="message-entry container_chat conv_bot">'
+    + '<img src="/media/images/logo_cliente.png" alt="Avatar" class="left" />'
+    + `<p class="conversa">${text}</p>`;
+    + '</div>';
+    + '</li>';
+
+    chatlog.append(message);
+  }
+
+  function sendMediaBlob(type, blob) {
+    if (!type || !blob) return null;
+    let typeText;
+    let extension;
+    let mime;
+
+    if (type === 'audio') {
+      typeText = 'áudio';
+      extension = 'mp3';
+      mime = 'audio/mp3';
+    } else if (type === 'video') {
+      typeText = 'vídeo';
+      extension = 'mp4';
+      mime = 'video/mp4';
+    }
+
+    let formData = new FormData();
+    let filename = getFileName(extension);
+    let file = new File([blob], filename, { type: mime, lastModified: Date.now() });
+
+    let msgReceived = `Recebi o seu ${typeText}!`;
+
+    formData.append('file', file);
+
+    $.ajax({
+      type: 'POST',
+      url: saveMediaURL,
+      data: formData,
+      global: false, /*Para cancelar o carregamento do ajax*/
+      processData: false,
+      contentType: false
+    })
+    .done(function (res) {
+      console.log(res);
+      if (res.status === 'ok') {
+        createRowBot(msgReceived);
+        input_text();
+        initEventsInputText();
+      }
+    })
+    .fail(function (err) {
+      console.log(err);
+    });
+  }
+
+  const cancelClick = function () {
+      let allUserMessages = document.querySelectorAll('div.message-entry.container_chat:not(.conv_bot)');
+      let lastUserMessage = allUserMessages[allUserMessages.length - 1];
+      let lastUserMessageLi = lastUserMessage.parentNode;
+      lastUserMessageLi.parentNode.removeChild(lastUserMessageLi);
+
+      createRowBot('Você cancelou o envio!');
+
+      input_text();
+      initEventsInputText();
+    }
+
+/*  function createInputAudio() {
+    // Apaga o input de texto e cria os elementos de gravação de áudio
+
+    let divAudio = document.createElement('div');
+    let iconAudioRecording = document.createElement('i');
+    let btnStopRecording = document.createElement('button');
+    let btnSendAudioRecording = document.createElement('button');
+    let btnCancelAudioSending = document.createElement('button');
+
+    iconAudioRecording.className = 'fa-microphone fa-blink';
+    iconAudioRecording.id = 'blinking-mic-icon';
+    btnStopRecording.id = 'stop-recording';
+    btnStopRecording.innerText = 'Stop';
+    btnStopRecording.onclick = function () {
+      StopRecording();
+      this.classList = 'hidden';
+      btnSendAudioRecording.className = '';
+      btnCancelAudioSending.className = '';
+      iconAudioRecording.classList.remove('fa-blink');
+    }
+
+    btnSendAudioRecording.className = 'hidden';
+    btnSendAudioRecording.innerText = 'Enviar';
+    btnSendAudioRecording.id = 'send-audio';
+
+    btnCancelAudioSending.innerText = 'Cancelar';
+    btnCancelAudioSending.className = 'hidden';
+    btnCancelAudioSending.id = 'cancel-audio';
+    btnCancelAudioSending.onclick = function () {
+      let allUserMessages = document.querySelectorAll('div.message-entry.container_chat:not(.conv_bot)');
+      let lastUserMessage = allUserMessages[allUserMessages.length - 1];
+      let lastUserMessageLi = lastUserMessage.parentNode;
+      lastUserMessageLi.parentNode.removeChild(lastUserMessageLi);
+
+      input_text();
+
+      let chatlog = $('.js-chat-log');
+      chatlog[0].scrollTop = chatlog[0].scrollHeight;
+
+      $('.chat_enviar').click(function () {
+        submitInput(input.val(), input.val());
+      });
+
+      $('.chat_text').keydown(function (event) {
+        // Submit the input when the enter button is pressed
+        if (event.keyCode == 13) {
+          submitInput(input.val(), input.val());
+        }
+      });
+
+    }
+
+    divAudio.appendChild(iconAudioRecording);
+    divAudio.appendChild(btnStopRecording);
+    divAudio.appendChild(btnSendAudioRecording);
+    divAudio.appendChild(btnCancelAudioSending);
+
+    chat_input.empty();
+    chat_input.append(divAudio);
+    let chatlog = $('.js-chat-log');
+    chatlog[0].scrollTop = chatlog[0].scrollHeight;
+  }*/
+
+  function createVideoSubmit(e) {
+    if (!e) e = window.event;
+    e.stopPropagation();
+
+    startVideoRecording();
+  }
+
+  function createAudioSubmit(e) {
+    if (!e) e = window.event;
+    e.stopPropagation();
+
+    StartRecording();
+  }
+
+  function submitInput(input_val, input_resp) {
+
+    var inputData = {
+        'text': input_val,
+    }
+    var inputDataResp = {
+        'text': input_resp,
+    }
+    // Display the user's input on the web page
+    createRowUsuario(null, inputDataResp.text);
+    console.log(inputData);
+    var $submit = $.ajax({
+      type: 'POST',
+      url: chatterbotUrl,
+      data: JSON.stringify(inputData),
+      global: false, /*Para cancelar o carregamento do ajax*/
+      contentType: 'application/json'
+    });
+
+    $submit.done(function(statement) {
+        createRowBot(statement.text);
+        // Clear the input field
+
+        if (statement.extra_data == 'objetiva') {
+          var input_btn = '<input type="button" id="js-btn-left" class="btn btn-success btn_esquerdo col-md-5 col-xs-5" value="Sim"/>'
+          + '<input type="button" id="js-btn-right" class=" btn btn-danger btn_direito col-md-5 col-xs-5" value="Não"/>';
+
+          chat_input.empty();
+          chat_input.append(input_btn);
+        } else {
+          input_text()
+          setFocusToTextBox();
+
+        }
+
+        // Scroll to the bottom of the chat interface
+        chatlog[0].scrollTop = chatlog[0].scrollHeight;
+
+        $('.chat_text').keydown(function(event) {
+          // Submit the input when the enter button is pressed
+          if (event.keyCode == 13) {
+            submitInput($('.chat_text').val(), $('.chat_text').val());
+
+          }
+        });
+
+        $('.chat_enviar').click(function() {
+          submitInput($('.chat_text').val(), $('.chat_text').val());
+        });
+
+        $('#js-btn-left').click(function(){
+          count ++
+          var btn_left = $('#js-btn-left').val().concat('_'+count)
+          submitInput(btn_left, $('#js-btn-left').val());
+        });
+
+        $('#js-btn-right').click(function(){
+          count ++
+          var btn_right = $('#js-btn-right').val().concat('_'+count)
+          submitInput(btn_right, $('#js-btn-right').val());
+        });
+    });
+
+
+    $submit.fail(function() {
+      // TODO: Handle errors
+    });
+
+
+  }
+
+  botaoEnviar.click(function() {
+    submitInput(input.val(), input.val());
+  });
+
+  $('#js-btn-left').click(function(){
+    count ++
+    var btn_left = $('#js-btn-left').val().concat('_'+count)
+    submitInput(btn_left, $('#js-btn-left').val());
+  });
+
+  input_btn_right.click(function(){
+    count ++
+    var btn_right = input_btn_right.val().concat('_'+count)
+    submitInput(btn_right, input_btn_right.val());
+  });
+
+  input.keydown(function(event) {
+    // Submit the input when the enter button is pressed
+    if (event.keyCode == 13) {
+      submitInput(input.val(), input.val());
+    }
+  });
+
+  $('.chat-user').click(function(){
+    chatNotificacao.hide();
+  });
+
+  function setFocusToTextBox(){
+      document.getElementById("input_text").focus();
+  }
+
+</script>
+
+
+
+  <script type="text/javascript">
+		function toggleSampleChatWindow()
+		{
+			var $chat_win = jQuery("#sample-chat-window");
+
+			$chat_win.toggleClass('open');
+
+			if($chat_win.hasClass('open'))
+			{
+				var $messages = $chat_win.find('.ps-scrollbar');
+
+				if($.isFunction($.fn.perfectScrollbar))
+				{
+					$messages.perfectScrollbar('destroy');
+
+					setTimeout(function(){
+						$messages.perfectScrollbar();
+						$chat_win.find('.form-control').focus();
+					}, 300);
+				}
+			}
+
+			jQuery("#sample-chat-window form").on('submit', function(ev)
+			{
+				ev.preventDefault();
+			});
+		}
+
+		jQuery(document).ready(function($)
+		{
+			$(".footer-sticked-chat .chat-user, .other-conversations-list a").on('click', function(ev)
+			{
+				ev.preventDefault();
+				toggleSampleChatWindow();
+			});
+
+			$(".mobile-chat-toggle").on('click', function(ev)
+			{
+				ev.preventDefault();
+
+				$(".footer-sticked-chat").toggleClass('mobile-is-visible');
+			});
+		});
+		</script>
+    <script type="text/javascript">
+    // Here is just a sample how to open chat conversation box
+    jQuery(document).ready(function($)
+    {
+      var $chat_conversation = $(".chat-conversation");
+
+      $(".chat-group a").on('click', function(ev)
+      {
+        ev.preventDefault();
+
+        $chat_conversation.toggleClass('is-open');
+
+        $(".chat-conversation textarea").trigger('autosize.resize').focus();
+      });
+
+      $(".conversation-close").on('click', function(ev)
+      {
+        ev.preventDefault();
+        $chat_conversation.removeClass('is-open');
+      });
+    });
+    </script>

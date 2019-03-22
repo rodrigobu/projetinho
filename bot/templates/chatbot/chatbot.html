@@ -1,0 +1,84 @@
+<div>
+	<div class="footer-sticked-chat">
+		<!-- Start: Footer Sticked Chat -->
+
+		<ul class="chat-conversations list-unstyled">
+			<li id="sample-chat-window">
+
+				<a href="#"  class="chat-user" style="background-color:#4e70ea; color:#ffffff;">
+				   <span class="user-status is-online"></span>
+						<strong>CHATBOT</strong>
+				 </a>
+
+				{% if not tem_resposta %}
+				<span class="chat_notificacao badge badge-orange">&nbsp;</span>
+				{% endif %}
+
+				<div class="conversation-window">
+					<!-- User Info Link in header (used to close the chat bar) -->
+					<a href="#"  class="chat-user" style="background-color:#4e70ea; color:#ffffff;">
+					    <!-- <span class="close">&times;</span> -->
+					    <i id="send-video-icon" class="fa-video-camera"></i>
+					    <i id="send-audio-icon" class="fa-microphone" onclick="createAudioSubmit(event);"></i>
+					    <span class="user-status is-online"></span>
+					    <strong>CHATBOT</strong>
+					</a>
+
+					<ul class="conversation-messages ps-scrollbar ps-scroll-down list-group chat-log js-chat-log">
+						<li>
+							<div class="message-entry container_chat conv_bot">
+								<img src="/media/images/logo_cliente.png" alt="Avatar" class="left img-responsive img-circle" />
+								<p class="conversa">{{ texto_inicial }}</p>
+							</div>
+						</li>
+					</ul>
+					<div id="chat_input">
+						<!-- <input type="text" class="form-control chat_text"  placeholder="Digite sua mensagem..." /> -->
+						<strong></strong>
+						{% if entrevista %}
+						{% if tem_resposta %}
+						<input type="text" class="form-control chat_text col-md-6 col-xs-12"  readonly placeholder="Digite sua mensagem..." />
+						<button type="button" class="btn btn-info chat_enviar" disabled>
+										<i class="fa fa-send-o"></i>
+									</button>
+						{% else %}
+						<input type="text" class="form-control chat_text col-md-6 col-xs-12"  placeholder="Digite sua mensagem..." />
+						<button type="button" class="btn btn-info chat_enviar">
+										<i class="fa fa-send-o"></i>
+									</button>
+						{% endif %}
+						<!--	<input type="button" id="js-btn-left" class="btn btn-success btn_esquerdo col-md-5" value="Sim"/>
+								<input type="button" id="js-btn-right" class=" btn btn-danger btn_direito col-md-5" value="Não"/> -->
+						{% else %}
+						{% if tem_resposta %}
+						<input type="text" class="form-control chat_text col-md-6 col-xs-12"  readonly placeholder="Digite sua mensagem..." />
+						<button type="button" class="btn btn-info chat_enviar" disabled>
+										<i class="fa fa-send-o"></i>
+									</button>
+						{% else %}
+						<input type="text" class="form-control chat_text col-md-6 col-xs-12"  placeholder="Digite sua mensagem..." />
+						<button type="button" class="btn btn-info chat_enviar">
+										<i class="fa fa-send-o"></i>
+									</button>
+						{% endif %}
+
+						{% endif%}
+
+					</div>
+				</div>
+			</li>
+		</ul>
+		<!-- Para quando ficar mobile -->
+		<a href="#" class="mobile-chat-toggle">
+			{% if not tem_resposta %}
+
+			{% endif %}
+
+			<i class="linecons-comment"></i>
+			<!--<span class="num">1</span>
+			<span class="chat_notificacao badge badge-orange">1</span>
+		-->
+		</a>
+		<!-- End: Footer Sticked Chat -->
+	</div>
+</div>
