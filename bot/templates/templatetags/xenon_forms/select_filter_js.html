@@ -1,0 +1,23 @@
+
+<script type="text/javascript">
+
+$(function(){
+	$("#{{ field_id }}").select2({
+	    allowClear: true,
+	    placeholder: "{{ placeholder }}",
+        language: 'pt-BR'
+	});
+
+  if( $("#s2id_{{ field_id }}").parent().find("select").find("[value='{{ selected_item_id }}']").length != 0){
+    $("#{{ field_id }}").val("{{ selected_item_id }}").change();
+  } else {
+    $("#{{ field_id }}").val(  $("#s2id_{{ field_id }}").parent().find("select").find("option:first").val() ).change();
+  }
+
+  if('{{ disabled }}' == 'True'){
+	$("#{{ field_id }}").attr("disabled", true);
+  }
+
+});
+
+</script>

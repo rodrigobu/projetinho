@@ -1,0 +1,22 @@
+{% spaceless %}
+	
+	{% load forms_filters_aux %}
+	
+	<ul class='{{ error_list_class }}'> 
+		{% for field_name, errors in form_errors %}
+		        <li>
+		        	{% if field_name in form.fields %}
+		        		<span class='error_field_name'>{{ form|get_field_verbose_name:field_name|capfirst }}:</span>
+			        	<ul>
+			        		{% for e in errors %}
+			        			<li> <span class='error_field_error'>{{ e }}</span> </li>
+			        		{% endfor %}
+			        	</ul>
+			        {% else %} {# erros __all__, por exemplo, como os de unique_together #}
+			        	<span class='error_field_error'>{{ errors|join:'<br/>' }}</span>
+		        	{% endif %}
+		        </li>
+	    {% endfor %}
+    </ul>
+	
+{% endspaceless %}

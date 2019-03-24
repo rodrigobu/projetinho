@@ -1,0 +1,16 @@
+<div class="form-group {{ cols }}">
+    <label for="{{ field_name }}">{{ label_text }}: </label>
+    <div class="input-group">
+        <span class="input-group-addon">R$</span>
+        <input class="form-control {{ field_classes }}"
+               name="{{ field_name }}"
+               id="{{ field_id }}"
+               value="{{ field_value }}"
+                {{ custom_attr }}
+               {% if required %}required{% endif %}
+        >
+
+    </div>
+</div>
+
+

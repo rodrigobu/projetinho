@@ -1,0 +1,46 @@
+{% load i18n %}
+
+{% if visible %}
+<div class="{{ cols }} {% if has_alert %}has_alert{% endif %} margin-bottom-10">
+
+  {% if label_text %}
+  <label class="{% if inline %}col-sm-1{% endif %} control-label" for="{{ field_name }}">
+    {% trans label_text %}
+    {% if required %}
+        <span class="text-danger">*</span>
+    {% endif %}:
+    {% if info_block %}
+    <span class="badge badge-{{ info_block_color }}" title="{{ info_block }}"><i class="fa {{ info_block_icon }}"></i></span>
+    {% endif %}
+  </label>
+  {% endif %}
+
+    <div class="input-group spinner" data-step="{% if data_step %}{{ data_step }}{% else %}1{% endif %}" id="div_{{ field_id }}"
+    {% if data_min %}data-min="{{ data_min }}"{% endif %} {% if data_max %}data-max="{{ data_max }}"{% endif %}>
+        {% if not readonly %}{% if not disabled %}<span class="input-group-btn">
+            <button class="btn btn-gray" data-type="decrement">-</button>
+        </span>{% endif %}{% endif %}
+        <input class="{% if not select_ajax %}form-control text-center{% endif %}{{ field_classes }} {% if has_alert %}has_alert{% endif %} only-number"
+          name="{{ field_name }}"
+          {% if max_len %}maxlength="{{ max_len }}"{% endif %}
+          min="1"
+          max="999"
+          id="{{ field_id }}"
+          {% if field_value %}value="{{ field_value }}"{% endif %}
+          {% if placeholder %}placeholder="{% trans placeholder %}"{% endif %}
+          {{ custom_attr }}
+          {% if required %}required{% endif %}
+          {% if disabled %}disabled=""{% endif %}
+          {% if readonly %}readonly="readonly"{% endif %}
+          type="text"
+          data-parsley-type="integer"
+          data-parsley-errors-container="#help_block_{{ field_name }}"
+        >
+        {% if not readonly %}{% if not disabled %}<span class="input-group-btn">
+            <button class="btn btn-gray" data-type="increment" readonly="readonly">+</button>
+        </span>{% endif %}{% endif %}
+    </div>
+    <p class="help-block"  id="help_block_{{ field_name }}">{{ help_block }}</p>
+
+</div>
+{% endif %}

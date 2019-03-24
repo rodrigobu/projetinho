@@ -1,0 +1,20 @@
+{% load static %}
+<link rel='stylesheet' href='{% static 'js/select2/select2.css' %}' />
+<link rel='stylesheet' href='{% static 'css/multiselect/bootstrap-multiselect.css' %}' />
+<link rel='stylesheet' href='{% static 'css/multiselect/bootstrap-multiselect-custom.css' %}' />
+<style>
+  .datepicker-dropdown{
+		z-index: 9999 !important;
+	}
+	.multiselect-container.dropdown-menu {
+		z-index: 9999 !important;
+		overflow-y: auto;
+		position: absolute !important;
+  	max-height: 250px!important;
+	}
+	.multiselect + .multiselect-container {
+		max-height: 250px!important;
+		overflow-y: auto;
+		position: absolute !important;
+	}
+</style>

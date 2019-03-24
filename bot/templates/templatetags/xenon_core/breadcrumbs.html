@@ -1,0 +1,9 @@
+<div class="breadcrumb-env">
+  <ol class="breadcrumb bc-1">
+    {% for item in lista %}
+    <li {% if item.active %}class="active"{% endif %}>
+      <a name="{{ item.title }}"href="{{ item.link }}"><i class="{{ item.icon }}"></i>{{ item.title }}</a>
+    </li>
+    {% endfor %}
+  </ol>
+</div>

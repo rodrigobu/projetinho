@@ -1,0 +1,14 @@
+<div id='div_{{ field.auto_id }}' class="form-group{% if form_show_errors%}{% if field.errors %} has-error{% endif %}{% endif %}" style='display: block;'>
+
+    {% if field.label %}
+	<label  for="id_{{ prefix }}{{ field.name }}" class='control-label {{ label_class }}{% if field.field.required %} requiredField{% endif %}'>
+		{% if field.label %}{{ field.label }}{% else %}{{ field.label }}{% endif %}&nbsp;{{ label_sufix }}&nbsp;
+		{% if field.field.required %}<span class='asteriskField'>*</span>{% endif %} </label>
+    {% endif %}
+
+	<div class="controls ">
+		{{ field }}
+		{% if field.help_text %}<span class='help_text'>{{ field.help_text }}</span>{% endif %}
+	</div>
+
+</div>

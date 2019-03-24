@@ -1,0 +1,45 @@
+{% load i18n %}
+
+{% if visible %}
+<div class=" {{ cols }} {% if has_alert %}has_alert{% endif %} margin-bottom-10">{% if label_text %}
+<label class="{% if inline %}col-sm-1{% endif %} control-label" for="{{ field_name }}">
+{% trans label_text %}&nbsp;{% if required %}<span class="text-danger">* </span>{% endif %}:
+{% if info_block %}
+<span class="badge badge-{{ info_block_color }}" title="{{ info_block }}"><i class="fa {{ info_block_icon }}"></i></span>
+{% endif %}
+ </label>
+{% endif %}
+
+  <div class="{% if inline %}col-sm-11{% endif %}" id="div_{{ field_id }}">
+    <input class="{% if not select_ajax %}form-control{% endif %}  {{ field_classes }} {% if has_alert %}has_alert{% endif %} {% if inteiro %}only-number{% endif %}"
+      name="{{ field_name }}"
+      id="{{ field_id }}"
+      value="{{ field_value }}"
+      {% if placeholder %}placeholder="{% trans placeholder %}"{% endif %}
+      {% if max_len %}maxlength="{{ max_len }}"{% endif %}
+      {% if pattern %}pattern="{{ pattern }}"{% endif %}
+      type="{{ field_type }}"
+      {{ custom_attr }}
+      {% if onBlur %}onBlur="{{ onBlur }}"{% endif %}
+      {% if required %}required{% endif %}
+      {% if disabled %}disabled=""{% endif %}
+      {% if readonly %}readonly="readonly"{% endif %}
+	  {% if autofocus %}autofocus{% endif %}
+      data-parsley-errors-container="#help_block_{{ field_name }}"
+      {% if inteiro %}data-parsley-type="integer"{% endif %}
+      autocomplete='{{ field_name }}'
+    >
+    <p class="help-block" id="help_block_{{ field_name }}">{{ help_block }}</p>
+  </div>
+</div>
+
+{% if url_pesquisa_cep %}
+<div class="col-md-2" style="padding-left:0;">
+    <a href="{{ url_pesquisa_cep }}" class="btn btn-sm btn-gray margin-top-25 url_pesquisa_cep" type="button" title='{{ TEXTOS.url_pesquisa_cep }}' target="_blank">
+        <i class="{{ ICONES.search }}"></i>
+        <span class="bigger-110">{{ TEXTOS.descubra_cep }}</span>
+    </a>
+</div>
+{% endif %}
+
+{% endif %}

@@ -1,33 +1,43 @@
 from django.urls import path
 
-from apps.chatbot import views, mixins
+from apps.chatbot.views import chatbot, cadastro, edicao
 
 
 urlpatterns = [
 
     path('json/',
-        views.bot_global,
+        chatbot.bot_global,
         name='chatbot.bot_global'
     ),
 
     path('json/entrevista/',
-        views.bot_entrevista,
+        chatbot.bot_entrevista,
         name='chatbot.bot_entrevista'
     ),
 
     path('json/entrevista/<vaga>/<candidato>',
-        views.bot_entrevista,
+        chatbot.bot_entrevista,
         name='chatbot.bot_entrevista'
     ),
 
     path('json/adpt/<vaga>/<candidato>',
-        views.chat_entrevista,
+        chatbot.chat_entrevista,
         name='chatbot.chat_entrevista'
     ),
 
     path('audio/',
-        views.chat_audio_video,
+        chatbot.chat_audio_video,
         name='chatbot.audio_video'
+    ),
+
+    #cadastro
+    path('cadastro/',
+        cadastro.cadastro_texto,
+        name="chatbot.cadastro.texto"
+    ),
+    path('edicao/<slug:id>/',
+        edicao.edicao_texto,
+        name='chatbot.edicao.texto'
     ),
 
 ]

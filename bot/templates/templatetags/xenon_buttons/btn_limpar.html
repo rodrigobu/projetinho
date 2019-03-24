@@ -1,0 +1,9 @@
+{% load i18n %}
+
+<div class="action-buttons {{ btn_position }}">
+	<a href="{% if url_param %}{% url url_name url_param %}{% else %}{% url url_name %}{% endif %}"
+	class="btn btn-md {{ btn_class }} {{ btn_position }}" type="button" title='{{ btn_label }}'>
+		<i class="{{ ICONES.limpar }}"></i>
+		<span class="bigger-110">{{ btn_label }}</span>
+    </a>
+</div>

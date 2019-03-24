@@ -1,0 +1,279 @@
+<style>
+
+
+ul.errorlist {
+    padding-left: 0!important;
+    /*margin-top: 5px;*/
+    margin-top: 0px!important;
+    margin-bottom: 5px!important;
+    margin-left: 0px!important;
+}
+ul.errorlist li {
+    list-style: none!important;
+    color: red!important;
+    width: 100%!important;
+    font-size:0.8em!important;
+}
+ul.errorlist li span{
+    margin-top: 5px!important;
+}
+ul.errorlist li img{
+	vertical-align: middle;
+	margin-right: 2px!important;
+}
+
+</style>
+<script type="text/javascript">
+	var URL_VALIDAR_CAMPO_FORMULARIO = "{% url 'app_utils.validar_campo_formulario' %}";
+
+	var validar_campo_formulario = function(id_field, function_validate) {
+		var retorno = true;
+		$.ajax({
+			url : URL_VALIDAR_CAMPO_FORMULARIO,
+			type : 'get',
+			dataType : 'json',
+			async : false,
+			data : {
+				valor : $("#" + id_field).val(),
+				tipo : function_validate
+			},
+			success : function(dados) {
+				if (dados == '1') {
+					$("#" + id_field).val("");
+					retorno = false;
+				} else {
+					retorno = true;
+				}
+			},
+			error : function() {
+				retorno = false;
+			},
+		});
+		return retorno;
+	};
+
+	var isNumber = function(evt) {
+		var charCode = (evt.which) ? evt.which : evt.keyCode;
+		//console.log(charCode);
+		if (charCode == 8)
+			return true;
+		//Backspace (deletar)
+		if (charCode != 44 && charCode != 45 && (charCode != 46 || $(this).val().indexOf(',') != -1 || $(this).val().indexOf('.') != -1) && (charCode < 48 || charCode > 57 ))
+			return false;
+
+		return true;
+	};
+
+	var set_protect_only_number = function(fields) {
+		// $ (fields).attr('onKeyUp', "$(this).val($(this).val().replace(/\D/ig, ''))");
+		$(fields).live('keyup', function() {
+			$(this).val($(this).val().replace(/\D/ig, ''));
+		});
+	};
+
+	var valida_decimal = function(campo, max_digits, max_decimal, max_inteiro) {
+		console.log(campo);
+		if ($("#" + campo).val().replace(",", "").replace(".", "").length > max_digits) {
+			$("#" + campo).val("");
+			console.log("Decimal Inválido:Certifique-se de que não tenha <br />  mais de " + max_digits + " dígitos no total.");
+			$.dialogs.error("Decimal Inválido", "Certifique-se de que não tenha <br />  mais de " + max_digits + " dígitos no total.");
+			return false;
+		}
+		if ($("#"+campo).val().split(",")[0].length > max_inteiro) {
+			$("#" + campo).val("");
+			console.log("Decimal Inválido:Certifique-se de que não tenha mais <br /> de " + max_inteiro + " dígitos antes do ponto decimal.");
+			$.dialogs.error("Decimal Inválido", "Certifique-se de que não tenha mais <br /> de " + max_inteiro + " dígitos antes do ponto decimal.");
+			return false;
+		}
+		if ($("#" + campo).val().split(",").length == 2) {
+			if ($("#"+campo).val().split(",")[1].length > max_decimal) {
+				$("#" + campo).val("");
+				console.log("Decimal Inválido", "Certifique-se de que não tenha <br /> mais de " + max_decimal + " casas decimais");
+				$.dialogs.error("Decimal Inválido", "Certifique-se de que não tenha <br /> mais de " + max_decimal + " casas decimais");
+				return false;
+			}
+		}
+
+		if (!validar_campo_formulario(campo, "valida_decimal")) {
+			$("#" + campo).val("");
+			console.log("Decimal Inválido", "Por favor, informe um número <br /> decimal no formato válido.");
+			$.dialogs.error("Decimal Inválido", "Por favor, informe um número <br /> decimal no formato válido.");
+			return false;
+		}
+		//clean_errors_field(campo);
+		return true;
+	};
+
+	var valida_decimal_2 = function(valor) {
+		if (valor == '')
+			return true;
+		var novo_valor = valor.replace('R$', '').replace('.', '').replace(',', '.');
+		if (novo_valor != valor)
+			valor = novo_valor;
+		var x = /^[0-9]*([,|.][0-9]{1,2}|)$/;
+		if (!valor.match(x))
+			return false;
+	};
+
+	var valida_decimal_9_99 = function(valor) {
+		console.log(valor);
+		if (valor == '')
+			return true;
+		var novo_valor = valor.replace('R$', '').replace('.', '').replace(',', '.');
+		if (novo_valor != valor)
+			valor = novo_valor;
+		var x = /^[0-9]{1,3}([,|.][0-9]{0,2}|)$/;
+		if (!valor.match(x))
+			return false;
+	};
+
+	var valida_data = function(valor) {
+		console.log("'" + valor + "'");
+		if (valor == '')
+			return true;
+		if (!/(0[1-9]|[12][0-9]|3[01])[/|-](0[1-9]|1[012])[/|-]\d{4}/.test(valor))
+			return false;
+		valor = valor.replace(/ /g, '').replace(/\//g, '');
+		if (valor.length != 8)
+			return false;
+	};
+
+	var validar_moeda = function(campo) {
+		if ($("#" + campo).val().replace(",", "").replace(".", "").length > 10) {
+			$("#" + campo).val("");
+			$.dialogs.error("Decimal Inválido", "Certifique-se de que não tenha <br />  mais de 10 dígitos no total.");
+			return false;
+		}
+		if ($("#"+campo).val().split(",")[0].length > 8) {
+			$("#" + campo).val("");
+			$.dialogs.error("Decimal Inválido", "Certifique-se de que não tenha mais <br /> de 8 dígitos antes do ponto decimal.");
+			return false;
+		}
+		if ($("#" + campo).val().split(",").length == 2) {
+			if ($("#"+campo).val().split(",")[1].length > 2) {
+				$("#" + campo).val("");
+				$.dialogs.error("Decimal Inválido", "Certifique-se de que não tenha <br /> mais de 2 casa decimais");
+				return false;
+			}
+		}
+		if (!validar_campo_formulario(campo, "valida_moeda")) {
+			$("#" + campo).val("");
+			$.dialogs.error("Decimal Inválido", "Por favor, informe um número <br /> decimal no formato 99999999,99");
+			return false;
+		}
+		//clean_errors_field(campo);
+		return true;
+	};
+
+	// Erros vindo de Post ou get por uma variavel do erros
+	{% if erros %}
+	var ERROS = {
+		{% for campo, erro in erros.items %}
+		'{{ campo }}' : '{{ erro }}' {% if not forloop.last %},{% endif %}
+		{% endfor %}
+	};
+	{% endif %}
+
+	$(function() {
+
+		// Mensagens dp Django
+		{% if messages %}
+		// Lista de mensagens
+		var msg_erro = "";
+		var msg_info = "";
+		var msg_success = "";
+		var msg_warning = "";
+
+		// Agrupa mensagens do mesmo tipo
+		// Necessário messages do django: messages.?(request,'')
+		{% for m in messages %}
+		if ('{{ m.tags }}' == 'error') {
+			msg_erro += '{{ m }}<br/>';
+		} else if ('{{ m.tags }}' == 'success') {
+			msg_success += '{{ m }}<br/>';
+		} else if ('{{ m.tags }}' == 'info') {
+			msg_info += '{{ m }}<br/>';
+		} else if ('{{ m.tags }}' == 'warning') {
+			msg_warning += '{{ m }}<br/>';
+		}
+		{% endfor %}
+
+		//Emite o alerta
+		if (msg_erro != "") {
+			$.dialogs.error(msg_erro);
+		};
+		if (msg_success != "") {
+			$.dialogs.success(msg_success);
+		};
+		if (msg_info != "") {
+			$.dialogs.info(msg_info);
+		};
+		if (msg_warning != "") {
+			$.dialogs.warning(msg_warning);
+		};
+
+		{% endif %}
+
+		// - Geração de erros vindos do POST da primeira página
+		{% if erros %}
+		if (ERROS) {
+			gerate_errors(ERROS);
+		};
+		{% endif %}
+
+		//-Criação dos tooltips para as mensagens de erro/validação
+		$(".errorlist_img").tooltip();
+	});
+
+	// Obtém um hash com os valores dos elementos de um form. As chaves dos elementos do hash são os names dos elementos do form.
+	// Se os campos tivererm um prefixo no name que deve ser retirado, passar esse prefixo para o parâmetro 'retirar_prefixo'
+	var get_hash_from_form = function(form, retirar_prefixo) {
+		var hash = {};
+		var campos = $(form).find('input[type!=button][type!=submit],textarea,select').filter('[name]:not(:disabled)');
+		$.each(campos, function(indice, campo) {
+			if ($(campo).is('input[type=file]')) {
+				return 1;
+			}
+			// Um 'continue' para a função $.each(), para não enviar campos de arquivo
+			var name = $(campo).attr('name');
+			var valor = '';
+			if ($(campo).is('select[multiple]'))
+				$.each($(campo).find('option:selected'), function(indice, opt) {
+					if (valor == '')
+						valor = $(opt).val();
+					else
+						valor += ',' + $(opt).val();
+				});
+			else if ($(campo).is('input[type=checkbox]'))
+				if ($(campo).is(':checked'))
+					if (!( name in hash))
+						if ($(campo).val())
+							valor = $(campo).val();
+						else
+							valor = "on";
+					else
+						valor = hash[name] + ',' + $(campo).val();
+				else
+					return 1;
+			// Um 'continue' para não enviar checkboxes desmarcados
+			else if ($(campo).is('input[type=radio]'))
+				if ($(campo).is(':checked'))
+					valor = $(campo).val();
+				else
+					return 1;
+			// Um 'continue' para não enviar radiobuttons desmarcados
+			else if (($(campo).parent().is('.vHora') || $(campo).is('.vHora') ) || ($(campo).parent().is('.vMes') || $(campo).is('.vMes') ) || ($(campo).parent().is('.vPorcentagem') || $(campo).is('.vPorcentagem') ))
+				valor = $(campo)[0].value;
+			else
+				valor = $(campo).val();
+			if (retirar_prefixo) {
+				regex = RegExp('^' + retirar_prefixo);
+				if (regex.test(name))
+					name = name.split(retirar_prefixo)[1];
+			}
+			hash[name] = valor == null ? '' : valor;
+		});
+		return hash;
+	};
+
+</script>

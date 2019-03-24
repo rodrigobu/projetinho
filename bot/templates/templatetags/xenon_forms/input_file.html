@@ -1,0 +1,26 @@
+{% load i18n %}
+
+<div class=" {{ cols }} {% if has_alert %}has_alert{% endif %} margin-bottom-10">{% if label_text %}
+<label class="{% if inline %}col-sm-1{% endif %} control-label" for="{{ field_name }}">
+{% trans label_text %}&nbsp;{% if required %}<span class="text-danger">* </span>{% endif %}:
+{% if info_block %}
+<span class="badge badge-{{ info_block_color }}" title="{{ info_block }}"><i class="fa {{ info_block_icon }}"></i></span>
+{% endif %}
+ </label>
+{% endif %}
+
+  <div class="{% if inline %}col-sm-11{% endif %}" id="div_{{ field_id }}">
+    <input class="{% if not select_ajax %}form-control{% endif %}  {{ field_classes }} {% if has_alert %}has_alert{% endif %}"
+      name="{{ field_name }}"
+      id="{{ field_id }}"
+      value="{{ field_value }}"
+      type="file"
+      {{ custom_attr }}
+      {% if required %}required{% endif %}
+      {% if disabled %}disabled=""{% endif %}
+      {% if readonly %}readonly="readonly"{% endif %}
+      data-parsley-errors-container="#help_block_{{ field_name }}"
+    >
+    <p class="help-block" id="help_block_{{ field_name }}">{{ help_block }}</p>
+  </div>
+</div>

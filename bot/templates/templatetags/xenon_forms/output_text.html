@@ -1,0 +1,15 @@
+{% load i18n %}
+
+<div class="{% if use_form %}form-group{% endif %} {{ cols }} text-black margin-bottom-5">
+  <div class="{{ field_classes }}" >
+
+    <label style="{% if not not_bold %}font-weight: bold;{% endif %} margin-right: 5px;" > {%if label_text %}{% trans label_text %}:{% endif %} 
+    {% if info_block %}
+    <span class="badge badge-{{ info_block_color }}" title="{{ info_block }}"><i class="fa {{ info_block_icon }}"></i></span>
+    {% endif %}
+    </label>
+
+    <span {{ custom_attr }} >{{ field_value|safe|default_if_none:'-' }}</span>
+
+  </div>
+</div>

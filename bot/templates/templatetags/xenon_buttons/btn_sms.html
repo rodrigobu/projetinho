@@ -1,0 +1,19 @@
+{% load i18n %}
+
+{% if candidato and controle %}
+
+<a {% if status %}href="{% url 'admin.sms.envio' candidato.slug %}"{% else %}onclick="abrir_alerta_sms()"{% endif %} type="button" target="_blank"
+  class="btn btn-md btn-default {{ btn_class }} {{ btn_position }}" title="{{ titulo }}">
+    <i class="{{ ICONES.email_close }}"></i>
+    <span class="bigger-110">{{ TEXTOS.enviar_sms_simples }}</span>
+</a>
+
+{% if not status %}
+<script>
+ var abrir_alerta_sms = function(){
+   $.dialogs.error("{{ titulo }}");
+ }
+</script>
+{% endif %}
+
+{% endif %}

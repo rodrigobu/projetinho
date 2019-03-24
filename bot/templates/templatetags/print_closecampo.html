@@ -1,0 +1,13 @@
+<div class="form-group">
+
+	<label class="{{ css_classes }}" for="id_{{ prefix }}{{ field.name }}"> {{ field.label }}{{ label_sufix }} </label>
+
+	<button id="bt_hide_id_{{ prefix }}{{ field.name }}" class="btn btn-minier btn-danger bt_hide" type="button">
+		<i class=" glyphicon glyphicon-trash"></i>
+	</button>
+
+	<div class="controls ">
+		{{ field }}
+	</div>
+
+</div>

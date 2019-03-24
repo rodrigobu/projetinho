@@ -1,0 +1,17 @@
+<div class="xe-widget xe-counter-block xe-shadow" data-count=".num" data-from="0" data-to="99.9" data-suffix="%" data-duration="2">
+	<div class="xe-upper">
+
+		<a {% if link %}href="{% url link %}"{% else %}href="javascript:void(0);"{% endif %}>
+			<div class="xe-icon">
+				<i class="{{ icon }}"></i>
+			</div>
+
+			<div class="xe-label">
+				<span>{{ title }}</span>
+			</div>
+		</a>
+	</div>
+
+	<div class="xe-lower margin-top-15">
+	</div>
+</div>

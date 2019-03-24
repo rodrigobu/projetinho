@@ -1,0 +1,23 @@
+{% load i18n %}
+
+<div class="form-group {{ cols }}">
+   {% if label_text %}
+    <label for="{{ field_name }}" class="{{ label_classes }}">{% trans label_text %}:
+        {% if required %}
+            <span class="asteriskField">*</span>
+        {% endif %}
+    </label>
+    {% endif %}
+    <input class="form-control {{ field_classes }}"
+           name="{{ field_name }}"
+           id="{{ field_id }}"
+           value="{{ field_value }}"
+           {% if max_len %}maxlength="{{ max_len }}"{% endif %}
+           type="{{ field_type }}"
+            {{ custom_attr }}
+           {% if required %}required{% endif %}
+    >
+    {% if help_block %}
+    <p class="help-block" id="help_block_{{ field_name }}">{{ help_block }}</p>
+    {% endif %}
+</div>

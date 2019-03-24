@@ -1,31 +1,5 @@
 {% load i18n %}
 {% load static %}
 <script src="/static/js/RecordRTC/RecordRTC.min.js"></script>
-<script>
-  var vaga = '{{ vaga.id }}'
-  var candidato = "{{ candidato.id }}"
-  var is_alternativa = "{{ is_alternativa }}"=='True';
-  var chatterbotUrl = '{% url "chatbot.bot_entrevista"%}';
-  var saveMediaURL = "{% url 'chatbot.audio_video' %}";
-  {% if candidato %}
-  var candFoto = "{% url 'admin.candidato.foto.download' candidato.id %}"
-  {% else %}
-  var candFoto = "{% url 'admin.candidato.foto.download' %}"
-  {% endif %}
-
-  {% if 'selec' in campos_visiveis or 'selec_mail' in campos_visiveis  %}
-    {% if vaga.resp_selecao %}
-    var botFoto = "{% url 'admin.usuario.foto.download' vaga.resp_selecao.id %}"
-    {% else %}
-    var botFoto = '{% static "images/avatar.png" %}'
-    {% endif %}
-  {% else %}
-    var botFoto = '{% static "images/avatar.png" %}'
-  {% endif %}
-
-  var TXT_DIGITE = '{{ TEXTOS.digite_sua_resposta }}';
-  var TXT_SIM = '{{ TEXTOS.sim }}';
-  var TXT_NAO = '{{ TEXTOS.nao }}';
-</script>
 <script src='{% static "chatbot/js/audio-video.js" %}'></script>
-<script src='{% static "chatbot/js/entrevista.js" %}'></script>
+{% include "chatbot/statics/bot_js.html" %}

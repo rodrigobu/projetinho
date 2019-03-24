@@ -1,0 +1,41 @@
+# -*- coding:utf-8 -*-
+from django.utils.translation import ugettext as _
+
+textos_q = {
+    'qntde_subordinados': _(u"Quantidade de Subordinados"),
+    'qntde_user': _(u'Quantidade de Usuários'),
+    'qntde_user_contratado': _(u'Quantidade de Usuários Inclusos'),
+    'qntde_user_adicionais': _(u'Quantidade de Usuários Adicionais'),
+    'qntde_user_logado_agora': _(u'Quantidade de Usuários Logados Agora'),
+
+    'qtd_fechadas': _(u'Qtde.Fechadas'),
+    'qtd_proc_sel': _(u'Qtde.Proc. Sel'),
+    'qtd_solicitada': _(u'Qtde. Solicitada'),
+    'qtd_solicitada_negativa': _(u'Qtde. Solicitada não pode ser menor que zero.'),
+    'qtd_vagas': _(u'Qtde.Vagas'),
+    'qtde_fotos_sistema': _(u'Qtde. de Fotos no Sistema'),
+    'qtde_fotos_portal': _(u'Qtde. de Fotos no Portal do Candidato'),
+    'qtde_multiportais': _(u'Quantidade de Multiportais'),
+    'qtde_limite_selecao': _(u'Quantidades de Registros na Seleção de Candidatos'),
+    'qtde_limite_selecao_instrucao': _(u'Configure aqui a quantidade limite de registros que serão exibidos nos Detalhes do Candidato na Seleção de Candidatos.'),
+    'qtde_limite_range_invalida': _(u'A quantidade de registros deve estar entre {} e {}.'),
+    'qtde_limite_funcoes_selecao': _(u'Quantidade de Funções'),
+    'qtde_limite_exp_prof_selecao': _(u'Quantidade de Experiências Profissionais'),
+    'qtde_limite_proc_sel_selecao': _(u'Quantidade de Processos Seletivos'),
+    'qtde_limite_candidaturas_selecao': _(u'Quantidade de Candidaturas'),
+    'qtde_limite_comparecimento_selecao': _(u'Quantidade de Comparecimentos'),
+    'qtde_limite_parecer_selecao': _(u'Quantidade de Pareceres'),
+    'qtde_vagas': _(u'Quantidade de Vagas'),
+
+    'qualquer': _(u'Qualquer'),
+    'quantidades': _(u'Quantidades'),
+    'quarta': _(u'Quarta'),
+    'quebra_por': _(u'Quebra por'),
+    'questao': _(u'Questão'),
+    'questionario_pre_selecao': _('Questionário de Pré-Seleção'),
+    'questionario_vaga_nao_encontrado': _(u'O Questionário da Vaga não foi encontrado.'),
+    'questionario_vaga_sucesso': _(u'O Questionário da Vaga foi salvo com sucesso.'),
+    'questionario_ver_respostas': _('Visualização das Respostas dos Questionários de Pré-Seleção'),
+    'questoes': _(u'Questões'),
+    'quinta': _(u'Quinta'),
+}

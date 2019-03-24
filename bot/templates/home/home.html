@@ -1,0 +1,22 @@
+{% extends "home/base.html" %}
+
+{% load i18n %}
+{% load static %}
+
+{% block chatbot_css %}
+  {% include "chatbot/chatbot_css.html" %}
+{% endblock %}
+
+{% block chatbot %}
+  {% include "chatbot/chatbot_entrevista.html" %}
+{% endblock %}
+
+{% block chatbot_js %}
+<script>
+    var chatterbotUrl = "{% url 'chatbot.bot_global' %}"
+    var botFoto ='{% static "images/fotobot.jpg" %}'
+    var userFoto ='{% static "images/fotouser.jpg" %}'
+    var TXT_DIGITE = 'Digite uma messagem'
+</script>
+{% include "chatbot/statics/entrevista.html" %}
+{% endblock %}

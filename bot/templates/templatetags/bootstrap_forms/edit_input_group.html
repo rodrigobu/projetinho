@@ -1,0 +1,13 @@
+{% load i18n %}
+
+<div class="form-group  {{ cols }}">
+    <h5>{% trans label_text %}:
+        {% if required %}
+            <span class="asteriskField">*</span>&nbsp;
+        {% endif %}
+        <a class="text_label" href="javascript:void(0);" id="id_lbl_{{ field_name }}" data-type="{{ data_type }}" data-pk="{{ field_pk }}" data-value="{{ field_value_id }}">
+         {% if not yesno_opt %}  {{ field_value }} {% else %} {{ field_value| yesno:yesno_opt }} {% endif %}
+       </a>
+        <a href="javascript:void(0);" class=" glyphicon glyphicon-pencil" id="id_editar_{{ field_name }}" title="" data-original-title="Editar {% trans label_text %}" style="margin-left: 5px"></a>
+    </h5>
+</div>

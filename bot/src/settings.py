@@ -15,13 +15,14 @@ from os import path as ospath
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+PROJECT_EXTERNAL = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '(reggc5g23y7y^gjeg&^ag3kyr@ngf_c^b3haf#x@6+x&v34_t'
+SECRET_KEY = 'x0wlumvrt2433prl_6olq+kpyujkd#hkflpk$j+bjla0bfz%76'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -40,7 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'chatterbot.ext.django_chatterbot',
-    'apps.chatbot',
+    'apps.home',
+    'apps.chatbot'
 
 ]
 
@@ -56,6 +58,8 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'src.urls'
 
+ROOT_URLCONF = 'src.urls'
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -68,6 +72,10 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
             ],
+            'libraries': {
+                'xenon_core': 'apps.templatetags.xenon_core',
+                'xenon_forms': 'apps.templatetags.xenon_forms',
+            }
         },
     },
 ]
@@ -77,17 +85,17 @@ WSGI_APPLICATION = 'src.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'chatbot',
+        'NAME': 'gca_processos',
         'USER': 'postgres',
         'PASSWORD': 'postgres',
         'HOST': '127.0.0.1',
         'PORT': '5432',
     }
 }
-
 
 
 # Password validation
@@ -112,22 +120,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/2.0/topics/i18n/
 
-LANGUAGE_CODE = 'pt-br'
-
-TIME_ZONE = 'America/Sao_Paulo'
-
-USE_I18N = True
-
-USE_L10N = True
-
-USE_TZ = True
-
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/2.0/howto/static-files/
-
 STATIC_URL = '/static/'
-PROJECT_EXTERNAL = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 STATICFILES_DIRS = (
     os.path.join(PROJECT_EXTERNAL, 'spa-static/static/'),
     os.path.join(PROJECT_EXTERNAL, "global_static/html/static/"),

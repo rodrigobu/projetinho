@@ -1,0 +1,54 @@
+{% load i18n %}
+
+
+<div class=" {{ cols }} {% if has_alert %}has_alert{% endif %} margin-bottom-10" >
+
+  {% if label_text %}
+  <label class="control-label" for="{{ field_name }}">
+    {% trans label_text %}
+    {% if required %}
+        <span class="text-danger">*</span>
+    {% endif %}:
+    {% if info_block %}
+    <span class="badge badge-{{ info_block_color }}" title="{{ info_block|safe }}"><i class="fa {{ info_block_icon }}"></i></span>
+    {% endif %}
+  </label>
+  {% endif %}
+
+  <div class="multiple-group row" id="div_{{ field_id }}">
+
+    <div class="col-md-10">
+
+    <select class="form-control  {{ field_classes }}"
+            name="{{ field_name }}"
+            multiple="multiple"
+            id="{{ field_id }}"
+            {{ custom_attr }}
+            {% if required %}required=""{% endif %}
+	        data-parsley-errors-container="#help_block_{{ field_name }}"
+    >
+        {% if not hide_blanc_opt %}<option value="">{{ blanc_opt_txt }}</option>{% endif %}
+        {% for item in list %}
+            <option {% if selected_item_id == item.id %}selected{% endif %} {% if item.0 in selected_list_id %}selected{% endif %}
+                    value="{{ item.id }}" data-value="{{ item.data_value }}">{{ item }}</option>
+        {% endfor %}
+        {% for item in options %}
+            <option {% if selected_item_id == item.0 %}selected{% endif %} {% if item.0 in selected_list_id %}selected{% endif %}
+                    value="{{ item.0 }}" >{{ item.1 }}</option>
+        {% endfor %}
+    </select>
+
+    </div>
+
+    <div class="col-md-2">
+        <a id="select_{{ field_name }}" class="btn btn-gray btn-sm" title="{% trans 'Selecionar Todos' %}" style="margin-left: 0px;"><i class="{{ ICONES.check_square }}"></i></a>
+        <a id="deselect_{{ field_name }}" class="btn btn-gray btn-sm"  title="{% trans 'Limpar Seleção' %}" style="margin-left: 0px;"><i class="{{ ICONES.delete }}"></i></a>
+    </div>
+
+    <p class="help-block" id="help_block_{{ field_name }}">{{ help_block }}</p>
+
+
+  </div>
+
+
+</div>

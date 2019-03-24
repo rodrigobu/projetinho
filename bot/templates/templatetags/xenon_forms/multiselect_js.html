@@ -1,0 +1,58 @@
+
+
+<script type="text/javascript">
+
+	var remake_multiselect_{{ field_name }} = function() {
+			destroy_multiselect_{{ field_name }}();
+			 apply_multiselect_{{ field_name }}();
+	};
+
+	var destroy_multiselect_{{ field_name }} = function() {
+			$('#{{ field_id }}').multiselect('destroy');
+	};
+
+	var apply_multiselect_{{ field_name }} = function() {
+		$('#{{ field_id }}').multiselect({
+	      checkboxName : '{{ field_name }}',
+	      nSelectedText : '{{ nSelectedText }}',
+	      nonSelectedText : '{{ nonSelectedText }}',
+	      selectAllText : '{{ selectAllText }}',
+	   	  allSelectedText: '{{ allSelectedText }}',
+	      multiple : true,
+	      numberDisplayed : 1,
+	      buttonClass : 'btn btn-sm col-xs-12',
+	      includeSelectAllOption : true,
+	      includeSelectAllIfMoreThan : 2,
+	      enableFiltering : true,
+	      enableCaseInsensitiveFiltering : true,
+	  	  enableHTML : '{{ enableHTML }}',
+	      filterPlaceholder : '{{ filterPlaceholder }}',
+			  filterBehavior: 'both',
+			  templates: {
+			  	filterClearBtn: '<span class="input-group-btn"><button class="btn btn-white multiselect-clear-filter" type="button"><i class="glyphicon glyphicon-remove-circle"></i></button></span>',
+			  },
+			  disableIfEmpty: true,
+			  {% if enableClickableOptGroups %}
+			  enableClickableOptGroups: true,
+			  {% else %}
+			  selectAllValue: '',
+			  {% endif %}
+    });
+    $('#{{ field_id }}').multiselect('refresh');
+		$('#{{ field_id }}').off('load');
+		$('#{{ field_id }}').on('load',function(){
+			remake_multiselect_{{ field_name }} ();
+		});
+
+
+		{% if disabled %}
+		$('#{{ field_id }}').parent().find('.checkbox input').each(function () {
+			 $(this).attr('disabled', 'disabled').attr('readonly', 'readonly');
+		});
+		{% endif %}
+	};
+
+	$(function() {
+     apply_multiselect_{{ field_name }}();
+	});
+</script>

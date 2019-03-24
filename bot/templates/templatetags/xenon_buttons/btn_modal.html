@@ -1,0 +1,15 @@
+{% load i18n %}
+
+<div class="action-buttons {{ btn_position }}">
+    <button id="{{ btn_name }}"
+        class="btn {{ btn_class }} {{ btn_position }}"
+        name="{{ btn_name }}"
+        type="button"
+        {% if data_dismiss %}data-dismiss="modal"{% endif %}
+        {% if onclick %}onclick={{ onclick.0 }}{% endif %}
+    >
+
+        <i class="{{ btn_icone }}"></i>
+        <span class="bigger-110">{{ btn_label }}</span>
+    </button>
+</div>

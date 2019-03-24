@@ -1,0 +1,45 @@
+{% load i18n %}
+
+{% if visible %}
+<div class=" {{ cols }} {% if has_alert %}has_alert{% endif %} margin-bottom-10" >
+
+   {% if label_text %}
+    <label class="{% if inline %}col-sm-1{% endif %} control-label"  for="{{ field_name }}">
+        {% trans label_text %}
+        {% if required %}
+            <span class="text-danger">*</span>
+        {% endif %}:
+        {% if info_block %}
+        <span class="badge badge-{{ info_block_color }}" title="{{ info_block }}"><i class="fa {{ info_block_icon }}"></i></span>
+        {% endif %}
+    </label>
+    {% endif %}
+
+    <div class="{% if inline %}col-sm-11{% endif %}" id="div_{{ field_id }}">
+    <div class="input-group">
+       <div class="input-group-addon"> <i class="linecons-calendar"></i> </div>
+    <input class="form-control  {% if not readonly %}datepicker{% endif %}  {{ field_classes }}  {% if has_alert %}has_alert{% endif %}"
+           name="{{ field_name }}"
+           value="{{ field_value }}"
+           id="{{ field_id }}"
+            {{ custom_attr }}
+           {% if required %}required=""{% endif %}
+           {% if readonly %}readonly="readonly"{% endif %}
+           format="{{ format }}"
+           {% if startDate %}startdate="{{ startDate }}"{% endif %}
+           {% if endDate %}enddate="{{ endDate }}"{% endif %}
+           {% if disabledDays %}disableddays="{{ disabledDays }}"{% endif %}
+           {% if startView %}startview="{{ startView }}"{% endif %}
+           {% if viewMode %}viewmode="{{ viewMode }}"{% endif %}
+           {% if minViewMode %}minviewmode="{{ minViewMode }}"{% endif %}
+           {% if inputmask %}inputmask="{{ inputmask }}"{% endif %}
+           data-parsley-errors-container="#help_block_{{ field_name }}"
+           onBlur="javascript: validaData(this.value,this.id); {{ onBlur }}"
+           autocomplete='{{ field_name }}'
+
+    >
+    </div>
+    <p class="help-block" id="help_block_{{ field_name }}">{{ help_block }}</p>
+  </div>
+</div>
+{% endif %}

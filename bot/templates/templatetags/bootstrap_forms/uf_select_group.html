@@ -1,0 +1,20 @@
+{% load i18n %}
+
+<div class="form-group {{ cols }}">
+    <label for="{{ field_name }}">{% trans label_text %}:
+        {% if required %}
+            <span class="asteriskField">*</span>
+        {% endif %}
+    </label>
+    <select class="form-control {{ field_classes }}"
+            name="{{ field_name }}"
+            id="{{ field_id }}"
+            {{ custom_attr }}
+            {% if required %}required=""{% endif %}
+    >
+        {% for item in list %}
+            <option {% if selected_uf == item.0 %}selected{% endif %}
+                    value="{{ item.0 }}">{{ item.1 }}</option>
+        {% endfor %}
+    </select>
+</div>

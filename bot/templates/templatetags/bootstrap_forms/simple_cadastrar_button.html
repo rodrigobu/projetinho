@@ -1,0 +1,10 @@
+{% load i18n %}
+
+<button id="novo_cadastro_{{ field_id }}" type="button" class="btn btn-xs btn-success" title="" data-original-title="{{ label_text_help_cad|default:'Clique para cadastrar' }}">
+    {{ label_text_cad|default:'Cadastro' }}
+    <i class=" fa fa-plus-circle bigger-120 icon-on-right"></i>
+</button>
+<button id="cancelar_cadastro_{{ field_id }}" type="button" style="display:none" class="btn btn-xs btn-warning" title="" data-original-title="{{ label_text_help_cancel|default:'Clique para cancelar' }}">
+    {{ label_text_cancel|default:'Cancelar' }}
+    <i class=" fa fa-minus-circle bigger-120 icon-on-right"></i>
+</button>

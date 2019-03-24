@@ -1,0 +1,93 @@
+{% load static %}
+<script type='text/javascript' src='{% static 'js/jquery/jquery-sortable.js' %}'></script>
+<script>
+var TXT_COLUNA_SUCESSO = '{{ TEXTOS.config_colunas_sucesso }}';
+var TXT_VAL_COLUNA_OBG = '{{ TEXTOS.config_colunas_obrigatorio }}';
+
+function salvar_config_colunas(){
+
+		var campos_selecionados = [];
+		$.each( $("#sortable_campos_layout input"), function(idx, value){
+			campos_selecionados.push( $(value).val() )
+		});
+
+		if(campos_selecionados.length==0){
+			 $.dialogs.error(TXT_VAL_COLUNA_OBG);
+			 return false;
+		} else {
+
+	    $.ajax({
+	        url : URL_SALVAR_CONFIGURACAO,
+	        dataType : 'json',
+	        type : 'get',
+	        data : {
+	            'colunas' : campos_selecionados,
+	        },
+	        success : function(retorno) {
+	           $.dialogs.success(TXT_COLUNA_SUCESSO,
+						    function(){
+									window.location.href =  window.location.href
+								});
+	        }
+	    });
+			
+		}
+
+};
+
+function configurar_colunas(){
+
+  $.ajax({
+      url : URL_CONFIGURACAO_COLUNAS,
+      dataType : 'json',
+      type : 'get',
+      data : { },
+      success : function(retorno) {
+          $("#configurar_colunas_modal_body").html(retorno['html']);
+          jQuery('#configurar_colunas_modal').modal('show', {backdrop: 'fade'});
+					iniciar_configuracao();
+      }
+  });
+
+};
+
+function iniciar_configuracao(){
+
+  var adjustment;
+  $("ol.simple_with_animation").sortable({
+    group: 'simple_with_animation',
+    pullPlaceholder: false,
+    // animation on drop
+    onDrop: function  ($item, container, _super) {
+      var $clonedItem = $('<li/>').css({height: 0});
+      $item.before($clonedItem);
+      $clonedItem.animate({'height': $item.height()});
+
+      $item.animate($clonedItem.position(), function  () {
+        $clonedItem.detach();
+        _super($item, container);
+      });
+    },
+    // set $item relative to cursor position
+    onDragStart: function ($item, container, _super) {
+      var offset = $item.offset(),
+          pointer = container.rootGroup.pointer;
+
+      adjustment = {
+        left: pointer.left - offset.left,
+        top: pointer.top - offset.top
+      };
+
+      _super($item, container);
+    },
+    onDrag: function ($item, position) {
+      $item.css({
+        left: position.left - adjustment.left,
+        top: position.top - adjustment.top
+      });
+    }
+  });
+
+}
+
+</script>

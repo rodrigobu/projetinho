@@ -1,0 +1,7 @@
+<div class="checkbox form-group" id="div_id_{{ prefix }}{{ field.name }}" for='id_{{ prefix }}{{ field.name }}' class='{{ css_classes }}'>
+	<label class="">
+		<input type="checkbox" {% if field.value == value %}checked="checked"{% endif %}
+		      name="{{ prefix }}{{ field.name }}" id='id_{{ prefix }}{{ field.name }}'>
+		<span class="lbl"> {{ field.label }}</span>
+	</label>
+</div>

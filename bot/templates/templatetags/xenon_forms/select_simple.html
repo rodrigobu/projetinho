@@ -1,0 +1,50 @@
+{% load i18n %}
+
+{% if visible %}
+<div class=" {{ cols }} {% if has_alert %}has_alert{% endif %} margin-bottom-10" >
+
+  {% if label_text %}
+  <label class="{% if inline %}col-sm-1{% endif %} control-label" for="{{ field_name }}">
+    {% trans label_text %}
+    {% if required %}
+        <span class="text-danger">*</span>
+    {% endif %}:
+    {% if info_block %}
+    <span class="badge badge-{{ info_block_color }}" title="{{ info_block|safe }}"><i class="fa {{ info_block_icon }}"></i></span>
+    {% endif %}
+  </label>
+  {% endif %}
+
+  <div class="{% if inline %}col-sm-11{% endif %} {% if multiple %}multiple-group{% endif %}" id="div_{{ field_id }}">
+    <select class="{% if not filter_select %}form-control{% endif %} {{ field_classes }}"
+            name="{{ field_name }}"
+            {% if multiple %}multiple="multiple"{% endif %}
+            id="{{ field_id }}"
+            {{ custom_attr }}
+            {% if required %}required=""{% endif %}
+            {% if readonly %}disabled="disabled"{% endif %}
+            autocomplete='{{ field_name }}'
+	        data-parsley-errors-container="#help_block_{{ field_name }}"
+    >
+        {% if not hide_blanc_opt %}<option value="">{{ blanc_opt_txt }}</option>{% endif %}
+        {% for item in list %}
+            <option {% if selected_item_id|slugify == item.id|slugify %}selected{% endif %} {% if item.id in selected_list_id %}selected{% endif %}
+                    value="{{ item.id }}" data-value="{{ item.data_value }}">{{ item }}</option>
+        {% endfor %}
+        {% for item in options %}
+            <option {% if selected_item_id|slugify == item.0|slugify %}selected{% endif %} {% if item.0 in selected_list_id %}selected{% endif %}
+                    value="{{ item.0 }}" >{{ item.1 }}</option>
+        {% endfor %}
+    </select>
+    <p class="help-block" id="help_block_{{ field_name }}">{{ help_block }}</p>
+  </div>
+
+  {% if choosen_select %}
+
+  <input type='button' id="select_{{ field_name }}" class="btn btn-success float_right" value="{% trans 'Selecionar Todos' %}">
+  <input type='button' id="deselect_{{ field_name }}" class="btn btn-danger float_right"  value="{% trans 'Limpar Seleção' %}">
+
+  {% endif %}
+
+</div>
+{% endif %}

@@ -1,0 +1,22 @@
+<script>
+	$(function() {
+
+    $("#id_{{ field_name }}").chosen({
+      no_results_text : "Nenhum campo encontrado com ",
+      placeholder_text_multiple : "Selecione os campos"
+    });
+
+    $('#select_{{ field_name }}').click(function() {
+      $('#id_{{ field_name }} option').attr('selected', true);
+      $('#id_{{ field_name }}').trigger('liszt:updated');
+    //  $('.campos_auxiliares_{{ field_name }} input').attr("checked", true);
+    });
+
+    $('#deselect_{{ field_name }}').click( function() {
+      $('#id_{{ field_name }} option').attr('selected', false);
+      $('#id_{{ field_name }}').trigger('liszt:updated');
+    //  $('.campos_auxiliares_{{ field_name }} input').attr("checked", false);
+    });
+
+	});
+</script>

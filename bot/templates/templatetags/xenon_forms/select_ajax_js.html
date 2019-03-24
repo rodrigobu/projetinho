@@ -1,0 +1,52 @@
+
+<script type="text/javascript">
+
+$(function(){
+
+	$("#{{ field_id }}").select2({
+		minimumInputLength: {{ qtde_min_digitos }},
+		dropdownAutoWidth: true,
+		allowClear: true,
+		placeholder: "{{ placeholder }}",
+		language: 'pt-BR',
+		ajax: {
+			url: "{{ url }}",
+			dataType: 'json',
+			quietMillis: 100,
+			delay: 500,
+			data: function(term, page) {
+				return {
+					limit: -1,
+					q: term
+				};
+			},
+			results: function(data, page ) {
+				return { results: data }
+			}
+		},
+		formatResult: function(objeto) {
+			var HTML = "<div class='select2-user-result'>";
+            HTML += "<span>" + objeto.name + "</span>";
+
+			if(objeto.outros1){
+				HTML += "<br/><span>" + objeto.outros1 + "</span>";
+			}
+			if(objeto.outros2){
+				HTML += "<br/><span>" + objeto.outros2 + "</span>";
+			}
+
+			HTML += "</div>";
+            return HTML;
+		},
+		formatSelection: function(objeto) {
+			return objeto.name;
+		},
+	});
+
+	{% if pre_selected_id %}
+    $("#s2id_{{ field_id }} .select2-chosen").html("{{ pre_selected_label }}");
+		$("#{{ field_id }}").val({{ pre_selected_id }});
+		$("#s2id_{{ field_id }}").addClass('select2-allowclear');
+	{% endif %}
+});
+</script>

@@ -1,0 +1,24 @@
+<div class="xe-widget xe-counter-block xe-shadow {{ class }}">
+	<div class="xe-upper">
+
+		<a {% if link %}href="{% if args %}{% url link args %}{% else %}{% url link %}{% endif %}{% if params %}?{{ params }}{% endif %}"{% else %}href="{% if link_puro %}{{ link_puro }}{% else %}#{% endif %}"{% endif %}
+		   {% if nova_aba %}target="_blank"{% endif %}>
+			<div class="xe-icon">
+				<i class="{{ icon }}"></i>
+			</div>
+
+			<div class="xe-label">
+				<span>{{ title }}</span>
+			</div>
+		</a>
+	</div>
+
+	<div class="xe-lower" title="{{ tootip_datatitle }}">
+		{% if not no_amount %}<div class="xe-num pull-right">
+			<span>{{ amount }}</span>
+		</div>{% endif %}
+		<div class="xe-label pull-right">
+			<span>{{ datatitle }}</span>
+		</div>
+	</div>
+</div>

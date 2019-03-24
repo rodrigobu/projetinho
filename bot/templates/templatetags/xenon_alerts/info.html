@@ -1,0 +1,7 @@
+{% load i18n %}
+
+<div class="alert alert-{{ tipo }} {{ classe }}">
+  {% if block_icon %} <i class="fa {{ block_icon }}"></i>&nbsp;{% endif %}
+  {% if info_title %}<span class="title_alert"><b>{{ info_title }}</b></span><br>{% endif %}
+  {{ info|safe }}
+</div>

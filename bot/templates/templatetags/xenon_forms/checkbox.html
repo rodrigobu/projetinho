@@ -1,0 +1,24 @@
+{% load i18n %}
+
+{% if visible %}
+ {% if not inline %}<div class="{% if not no_checkbox_class %}checkbox{% endif %} {{ cols }} {% if has_alert %}has_alert{% endif %}">{% endif %}
+   <label class="{% if inline %}checkbox-inline {% if has_alert %}has_alert{% endif %} {% endif %}" style=" {% if apply_vertical %}margin-top: 5%;{% endif %}">
+     <input
+        name="{{ field_name }}"
+        id="{{ field_id }}"
+        type="{{ tipo }}"
+        value="{{ field_value }}"
+        class="{{ field_classes }}"
+        {% if checked %}checked{% endif %}
+		    {% if field_value == checked_in  %}checked{% endif %}
+        {% if disabled %}disabled{% endif %}
+        {% if readonly %}disabled readonly="readonly"{% endif %}
+        {{ custom_attr }}
+      >
+     {% if label_text %}<span class="label-text {{ class_label_text }}">{% trans label_text %}</span>{% endif %}
+     {% if info_block %}
+     <span class="badge badge-{{ info_block_color }}" title="{{ info_block|safe }}"><i class="fa {{ info_block_icon }}"></i></span>
+     {% endif %}
+   </label>
+  {% if not inline %}</div>{% endif %}
+{% endif %}

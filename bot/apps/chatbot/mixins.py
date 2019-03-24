@@ -5,49 +5,55 @@ from django.views.generic import View
 from django.http import JsonResponse
 
 from chatterbot import ChatBot
+from chatterbot.utils import input_function, get_response_time
 from chatterbot.logic import LogicAdapter
 from chatterbot.ext.django_chatterbot import settings
+from chatterbot.ext.django_chatterbot.models import Conversation, Response
 from chatterbot.conversation import Statement
+
+# from apps.vaga.models import VagaEntrevista, VagaEntrevistaRespostas
 
 
 class ChatterBotApiView(View):
     """View principal do Bot.
     """
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.INFO)
 
     @property
     def msg_default(self):
-        return textos.get('desculpe_n_entendi')
+        return 'Não entendi'
+        # return textos.get('desculpe_n_entendi')
 
-    nivel_resposta = 0
+    nivel_resposta = 0.6
 
     def adaptadores(self):
         """ Função que traz as respostas do bot global
         """
         logic_adapters = [
-        #     {
-        #         'import_path': 'chatterbot.logic.SpecificResponseAdapter',
-        #         'input_text': 'Help me!',
-        #         'output_text': 'Ok, here is a link: http://chatterbot.rtfd.org'
-        #     },
-        #
-        #     # Adaptador logico, para trazer a melhor resposta
+            {
+                'import_path': 'chatterbot.logic.SpecificResponseAdapter',
+                'input_text': 'Help me!',
+                'output_text': 'Ok, here is a link: http://chatterbot.rtfd.org'
+            },
+            {
+                'import_path': 'chatterbot.logic.SpecificResponseAdapter',
+                'input_text': 'changelog',
+                'output_text': '<a href="https://lemeconsultoria.webgca.com.br/changelog/" target="_blank">Tudo o que foi atualizado</a>'
+            },
+
+            # Adaptador logico, para trazer a melhor resposta
             {
                 'import_path': "chatterbot.logic.BestMatch",
                 "statement_comparison_function": "chatterbot.comparisons.levenshtein_distance",
                 "response_selection_method": "chatterbot.response_selection.get_first_response"
             },
 
-        #     # Setar respostas de baixa confiança, verfica se a resposta tem um confiabilidade aceitavel,
-        #     # Senão retonar uma resposta default.
+            # Setar respostas de baixa confiança, verfica se a resposta tem um confiabilidade aceitavel,
+            # Senão retonar uma resposta default.
             {
-                'import_path': "chatterbot.logic.BestMatch",
-                # 'threshold': self.nivel_resposta,
-
-                # 'default_response': self.msg_default
-                'default_response': 'I am sorry, but I do not understand.',
-                'maximum_similarity_threshold': 0.90
-
+                'import_path': 'chatterbot.logic.LowConfidenceAdapter',
+                'threshold': 0.6,
+                'default_response': self.msg_default
             },
         ]
         return logic_adapters
@@ -55,59 +61,54 @@ class ChatterBotApiView(View):
     def chatbot(self):
         '''Traz todas as configurações do BOT.
         '''
-        bot = ChatBot(
+        self.bot = ChatBot(
             **settings.CHATTERBOT,
-            logic_adapters=[
-                {
-                    'import_path': 'chatterbot.logic.SpecificResponseAdapter',
-                    'input_text': 'Help me!',
-                    'output_text': 'Ok, here is a link: http://chatterbot.rtfd.org'
-                },
+            logic_adapters = self.adaptadores(),
 
-                ]
+        )
+        return self.bot
+
+    def get_conversation(self, request):
+        """
+        Retornar a conversa para a sessão, se houver. Crie uma nova conversa,
+        se não existir uma.
+        """
+        class Obj(object):
+            def __init__(self):
+                self.id = None
+                self.statements = []
+
+        conversation = Obj()
+        conversation.id = request.session.get('conversation_id', 0)
+        existing_conversation = False
+        try:
+            Conversation.objects.get(id=conversation.id)
+            existing_conversation = True
+
+        except Conversation.DoesNotExist:
+            conversation_id = self.chatbot().storage.create_conversation()
+            request.session['conversation_id'] = conversation_id
+            conversation.id = conversation_id
+
+        if existing_conversation:
+            responses = Response.objects.filter(
+                conversations__id=conversation.id
             )
-        print (bot)
-        return bot
-    #
-    # def get_conversation(self, request):
-    #     """
-    #     Retornar a conversa para a sessão, se houver. Crie uma nova conversa,
-    #     se não existir uma.
-    #     """
-    #     class Obj(object):
-    #         def __init__(self):
-    #             self.id = None
-    #             self.statements = []
-    #
-    #     conversation = Obj()
-    #     conversation.id = request.session.get('conversation_id', 0)
-    #     existing_conversation = False
-    #     # try:
-    #     #     Conversation.objects.get(id=conversation.id)
-    #     #     existing_conversation = True
-    #     #
-    #     # except Conversation.DoesNotExist:
-    #     conversation_id = self.chatbot().storage.create_conversation()
-    #     request.session['conversation_id'] = conversation_id
-    #     conversation.id = conversation_id
-    #
-    #     if existing_conversation:
-    #         responses = Response.objects.filter(
-    #             conversations__id=conversation.id
-    #         )
-    #
-    #         for response in responses:
-    #             conversation.statements.append(response.statement.serialize())
-    #             conversation.statements.append(response.response.serialize())
-    #     return conversation
+
+            for response in responses:
+                conversation.statements.append(response.statement.serialize())
+                conversation.statements.append(response.response.serialize())
+        return conversation
 
 
     def get(self, request, *args, **kwargs):
         """
         Retorna os dados correspondente a conversa.
         """
+        conversation = self.get_conversation()
         return JsonResponse({
             'BOT': self.chatbot().name,
+            'conversation': conversation.statements
         })
 
     def post(self, request, *args, **kwargs):
@@ -118,15 +119,21 @@ class ChatterBotApiView(View):
         """
         dados = request.POST.copy()
         input_data = json.loads(request.read().decode('utf-8'))
-        print ('input_data', input_data)
         if 'text' not in input_data:
             return JsonResponse({
                 'text': [ textos.get('resposta_obrigatoria') ]
             }, status=400)
 
-        # conversation = self.get_conversation(request)
-        print ('input_data', input_data)
-        response = self.chatbot().get_response('Help me!')
+        conversation = self.get_conversation(request)
+        response = self.chatbot().get_response(input_data, conversation.id)
+        extra = response.extra_data
+        if extra:
+            extra = json.dumps({
+                'gca' : extra,
+            })
+            print ('EXTRA', extra)
+        print ("response", response.extra_data)
+        response.extra_data = extra
         response_data = response.serialize()
         return JsonResponse(response_data, status=200)
 
@@ -217,3 +224,21 @@ class ChatVaga(LogicAdapter):
         response_statement = self.validacao_pergunta(statement, vaga, cand)
         self.response_statement = response_statement
         return response_statement
+
+
+class ChatCadastro(object):
+    ''' Class para salvar para fazer tratamento para salvar os dados no banco
+    '''
+
+    def salvar(self, dados, statement=None):
+        from chatterbot.ext.django_chatterbot.models import Statement
+
+        if not statement:
+            statement = Statement()
+        print (statement)
+        statement.text = dados.get('texto')
+        campo_extra = dados.get('campos_extra')
+        if not campo_extra:
+            campo_extra = ''
+        statement.extra_data = campo_extra
+        statement.save()

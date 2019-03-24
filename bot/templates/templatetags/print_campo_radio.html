@@ -1,0 +1,17 @@
+{% load crispy_forms_field %}
+
+<div id="div_{{ field.auto_id }}" class="radio form-group{% if form_show_errors%}{% if field.errors %} has-error{% endif %}{% endif %}">
+    <label class="{{ label_class }}{% if field.field.required %} requiredField{% endif %}">
+        <span class="lbl"> {{ field.label|safe }}{% if field.field.required %}<span class="asteriskField">*</span>{% endif %}</span>
+        {% for value, display in field.field.choices %}
+            <div class='radio'>
+                <label class="{{ label_class }}">
+                    <input type="radio" class="ace" value="{{ value }}"
+                           name="{% if field.form.prefix %}{{ field.form.prefix }}-{% endif %}{{ field.name }}"
+                           {% if field.value == value %}checked="checked"{% endif %}/>
+                    <span class="lbl"> {{ display }} </span>
+                </label>
+            </div>
+        {% endfor %}
+    </label>
+</div>

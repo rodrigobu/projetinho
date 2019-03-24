@@ -1,0 +1,72 @@
+# -*- coding:utf-8 -*-
+from django.utils.translation import ugettext as _
+
+textos_l = {
+    'layout_gi': _(u'Layout: GI'),
+    'lancar_restricao': _(u'Lançar Restrição'),
+
+    'legenda': _(u'Legenda'),
+    'legendas': _(u'Legendas'),
+    'legenda_para_foto': _(u'Legenda para Foto'),
+    'leme_consultoria': _(u"Leme Tecnologia"),
+    'lembrete': _(u'Lembrete'),
+    'lembrete_aniversario': _(u'Lembrete de Aniversário'),
+    'lembrete_aniversario_habilitado': _(u'Habilitar criação de Lembretes de Aniversários de Contatos de Clientes'),
+
+    'licenciado_para': _(u'Licenciado Para'),
+    'lido': _(u'Lido'),
+    'limite_qtde_logados': _(u'Limita Quantidade de Usuários Logados?'),
+    'limite_storage_fotos': _(u'Limite de GB das Fotos'),
+    'limpar': _(u'Limpar'),
+    'limpar_selecao': _(u'Limpar Seleção'),
+    'limpar_campo_pesquisa': _(u'Limpar Campo de Pesquisa'),
+    'linkedin': _('LinkedIn'),
+    'linkedin_api_key': _('API KEY'),
+    'linkedin_label_btn': _(u'Se preferir, utilize'),
+    'linkedin_aviso_msg': _(u'Para concluir a importação do LinkedIn, você precisa informar os campos obrigatórios.'),
+    'link_externo': _(u'Link Externo'),
+    'link_sistema': _(u'Link do Sistema'),
+    'link_portal_candidato': _(u'Link do Portal do Candidato'),
+    'lista_semana': _(u'Lista da Semana'),
+    'lista_todos_avisos_alertas': _(u'Lista todos os avisos ou alertas cadastrados.'),
+    'listagem': _(u'Listagem'),
+    'listagem_candidatos': _(u'Listagem de Candidatos'),
+    'listagem_colaboradores': _(u'Listagem de Colaboradores'),
+    'listagem_clientes': _(u'Listagem de Clientes'),
+    'listagem_perfil_vaga': _(u'Listagem de Perfil da Vaga'),
+    'listagem_parecer': _(u'Listagem de Paraceres'),
+    'listagem_origem_desc': _(u'Lista todas as origens de candidato cadastradas.'),
+    'listar_candidatos_cadastrados': _(u'Lista os 100 candidatos mais novos do sistema.'),
+    'listar_clientes_cadastrados': _(u'Lista os 100 clientes mais novos do sistema.'),
+    'listar_exportados': _(u'Listar Exportados'),
+    'listar_vagas_cadastradas': _(u'Lista as 100 vagas mais novas do sistema.'),
+    'listagem_usuario_descricao': _(u'Lista todos os usuários cadastrados.'),
+    'listar_todos': _(u'Listar Todos'),
+
+    'local': _(u'Local'),
+    'local_trabalho': _(u'Local de Trabalho'),
+    'localizacao_empresa': _(u'Localização da Empresa'),
+    'logotipo': _(u'Logotipo'),
+    'logotipo_alterar': _(u'Alterar Logotipo'),
+    'logotipo_alteracao': _(u'Alteração de Logotipo'),
+    'logotipo_alteracao_erro': _(u'Alterar Logotipo'),
+    'logotipo_instrucao':  _(u'''Ao inserir o logo do seu cliente clique no botão 'Salvar'
+                             para realizar a troca.<br/>\
+        O logo deve ter o tamanho de 330x170.<br/>\
+        O tamanho do arquivo do logo não deve passar de 100kb.<br/>\
+        Colocar a extensão do arquivo, somente png.
+    '''),
+    'log_acesso_sistema': _(u'Log - Acesso ao sistema'),
+    'log_mov_dados': _(u'Log - Movimentação de dados'),
+    'log_sistema': _(u'Log do sistema'),
+    'login': _(u'Login'),
+    'login_etalent': _(u'Login Etalent'),
+    'login_infojobs_invalido': _(u'Login Infojobs inválido'),
+    'login_sms_invalido': _(u'Login SMS inválido'),
+    'login_candidato': _(u'Login do Candidato'),
+    'login_cliente': _(u'Login do Cliente'),
+    'login_portal': _(u'Login do Portal'),
+    'login_requerido': _(u'Login Requerido'),
+    'login_requerido_candidatura': _(u'É necessário fazer login no sistema para poder se candidatar. Deseja ir para a página de login?'),
+    'logo_excluir_confirm': _(u'Deseja realmete excluir o logo?'),
+}

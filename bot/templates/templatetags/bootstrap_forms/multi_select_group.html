@@ -1,0 +1,50 @@
+{% load i18n %}
+
+<script type="text/javascript">
+	$(function() {
+    $('#{{ field_id }}').multiselect($.extend({
+      checkboxName : '{{ field_name }}',
+      nSelectedText : '{{ nSelectedText }}',
+      nonSelectedText : '{{ nonSelectedText }}',
+      selectAllText : '{{ selectAllText }}'
+    }, {
+      multiple : true,
+      numberDisplayed : 1,
+      enableFiltering : true,
+      enableCaseInsensitiveFiltering : true,
+      buttonClass : 'btn btn-grey btn-sm col-xs-12',
+      filterPlaceholder : 'Filtrar por descrição',
+      includeSelectAllOption : true,
+      includeSelectAllIfMoreThan : 2,
+    }
+    ));
+    $('#{{ field_id }}').multiselect('refresh');
+	});
+</script>
+
+<div class="form-group {{ cols }}">
+    {% if label_text %}
+    <label for="{{ field_name }}">{% trans label_text %}:
+        {% if required %}
+            <span class="asteriskField">*</span>
+        {% endif %}
+    </label>
+    {% endif %}
+    <select class="form-control {{ field_classes }}"
+            name="{{ field_name }}"
+            id="{{ field_id }}" multiple="multiple"
+            {{ custom_attr }}
+						data-parsley-errors-container="#errorContainer_{{ field_name }}"
+            {% if required %}required=""{% endif %}
+    >
+        {% for item in list %}
+            <option {% if selected_item_id == item.id %}selected{% endif %}
+                    value="{{ item.id }}" data-value="{{ item.data_value }}">{{ item }}</option>
+        {% endfor %}
+        {% for item in options %}
+            <option {% if selected_item_id == item.0 %}selected{% endif %}
+                    value="{{ item.0 }}" data-value="{{ item.0 }}">{{ item.1 }}</option>
+        {% endfor %}
+    </select>
+    <div id="errorContainer_{{ field_name }}"></div>
+</div>

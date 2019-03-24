@@ -1,0 +1,11 @@
+{% load i18n %}
+
+{% if objeto.id or fixo %}
+<div class="action-buttons margin-right-10 {{ btn_position }}">
+	<a href="{% if url_param %}{% url url_name url_param %}{% else %}{% url url_name %}{% endif %}"
+	class="btn btn-sm margin-right-15 {{ btn_class }} {{ btn_position }}" type="button" title='{{ btn_label }}'>
+		<i class="{{ ICONES.plus_circle }}"></i>
+		<span class="bigger-110">{{ btn_label }}</span>
+    </a>
+</div>
+{% endif %}

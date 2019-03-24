@@ -1,0 +1,11 @@
+{% load i18n %}
+
+<div class="{% if use_form %}form-group{% endif %} {{ cols }}">
+  <div class="{{ field_classes }}" >
+
+    <label style="{% if not not_bold %}font-weight: bold;{% endif %} margin-right: 5px;" > {% trans label_text %}:</label>
+
+    <span {{ custom_attr }} >{{ field_value }}</span>
+
+  </div>
+</div>

@@ -1,0 +1,12 @@
+<div class="xe-widget xe-counter xe-shadow {{ class }} {{ color }}">
+
+	<a {% if link %}href="{% url link %}"{% else %}href="javascript:void(0);"{% endif %} title="{{ tooltip }}">
+		<div class="xe-icon">
+			<i class="{{ icon }}"></i>
+		</div>
+		<div class="xe-label">
+			<span>{{ title }}</span>
+			<strong class="num">{{ amount }}</strong>
+		</div>
+	</a>
+</div>

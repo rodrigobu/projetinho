@@ -1,0 +1,19 @@
+{% load static %}
+<script src='{% static 'js/select2/select2.min.js' %}' ></script>
+<script src='{% static 'js/select2/select2_locale_pt-BR.js' %}' ></script>
+<script src='{% static 'js/multiselect/bootstrap-multiselect.min.js' %}' ></script>
+<script src='{% static 'js/multiselect/bootstrap-multiselect.custom.js' %}' ></script>
+<script src='{% static 'js/jquery/jquery.inputmask.bundle.min.js' %}'></script>
+<script src='{% static 'js/datepicker/bootstrap-datepicker.js' %}'></script>
+<script src='{% static 'js/datepicker/bootstrap-timepicker.min.js' %}'></script>
+<script src='{% static 'js/datepicker/bootstrap-datepicker-utils.js' %}'></script>
+<script src='{% static 'js/forms/numeric-mask.js' %}'></script>
+<script src='{% static 'js/forms/utils.js' %}'></script>
+<script>
+$(function(){
+  set_protect_only_number('.only-number');
+  $('form:first *:input:visible:enabled:not([readonly]):first').focus();
+})
+</script>
+<script src='{% static 'js/parsley/parsley.min.js' %}'></script>
+<script src='{% static 'js/parsley/i18n/pt-br.js' %}'></script>

@@ -1,0 +1,47 @@
+{% load i18n %}
+{% load static %}
+<footer class="main-footer sticky footer-type-1">
+
+	<div class="row">
+		<div class="col-md-5 col-xs-12">
+			<div class="col-md-12 col-xs-12">
+				<img src='{% static 'images/logo_spaweb.png' %}' alt="SPA - Seleção de Pessoal AncoraRh" width="150" class="pull-left" />
+			</div>
+
+			{% if VER_BOTAO_ACESSO %}
+			<div class="col-md-12 col-xs-12 margin-top-10">
+				<a href="{% url 'admin.home' %}" class="btn btn-primary link_jq" id="btn_sistema">
+					<span class="glyphicon glyphicon-user"></span>
+					<span class="hidden-xs text-access">{{ TEXTOS.acesso_sistema }}</span>
+				</a>
+			</div>
+			{% endif %}
+		</div>
+
+		<div class="col-md-5 col-xs-12">
+			<ul class="list-unstyled">
+				<li>
+					<strong>{{ TEXTOS.contato }}:</strong> {{ parametros.nome_fantasia|default_if_none:"" }}
+				</li>
+				<li>
+					<strong>{{ TEXTOS.site }}:</strong>
+					{% if URL_SITE_CLIENTE %}
+					<a href="{{ URL_SITE_CLIENTE_LINK }}" target="_blank" title="{{ TEXTOS.clique_para_acessar }}">
+						{{ URL_SITE_CLIENTE }}
+					</a>
+					{% endif %}
+				</li>
+				<li>
+					<strong>{{ TEXTOS.telefone }}:</strong> {{ parametros.telefone_cliente|default_if_none:"" }}
+				</li>
+				<li>
+					<p>.:Todos Direitos Reservados Leme Tecnologia:.</p>
+				</li>
+			</ul>
+		</div>
+
+		<div class="col-md-2 col-xs-12">
+			<img src='{% static 'images/logo_ancorarh.png' %}' alt='Leme Tecnologia' width="150" class="pull-right" />
+		</div>
+	</div>
+</footer>

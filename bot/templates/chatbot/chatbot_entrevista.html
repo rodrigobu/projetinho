@@ -1,3 +1,6 @@
+{% load static %}
+
+
 <div>
 	<div class="footer-sticked-chat col-md-12" style="left:30%;">
 		<!-- Start: Footer Sticked Chat -->
@@ -28,9 +31,8 @@
 					<ul class="conversation-messages ps-scrollbar ps-scroll-down list-group chat-log js-chat-log">
 						<li>
 							<div class="message-entry container_chat_ent conv_bot" style="font-size: 1.2em;">
-								{% if vaga.resp_selecao %}
-								<img src="{% url 'admin.usuario.foto.download' vaga.resp_selecao.id %}" alt="Avatar" class="left img-responsive" />
-									{% endif %}
+								<img src='{% static "images/fotobot.jpg" %}' alt="Avatar" class="left img-responsive" />
+
 								<p class="conversa_entrevista">{{ texto_inicial|safe }}</p>
 							</div>
 						</li>
