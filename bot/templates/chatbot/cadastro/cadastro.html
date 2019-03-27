@@ -3,6 +3,7 @@
 {% load static %}
 {% load xenon_core %}
 {% load xenon_forms %}
+{% load static %}
 
 {% block custom_css %}
 {% include "statics/css/formularios.html" %}
@@ -24,6 +25,7 @@
     	      <div class="panel panel-default">
                   <div class="row">
 										{% textarea label='Texto do Bot' name="texto" cols='col-md-6' linhas=3 %}
+										{% include 'chatbot/cadastro/especial/texto_bot.html' %}
 
                   {% select_simple label='Permissão de Usuário' name='permissao' cols='col-md-3'  required=True options=lista_permissao %}
                   {% select_simple label='Tipo do Produto' name='produto' cols='col-md-3'  required=True options=lista_produto %}
@@ -52,5 +54,6 @@
 {% block custom_js %}
 {% include 'statics/js/datatables.html' %}
 {% include "statics/js/formularios.html" %}
-
+{% include "chatbot/statics/envio_login_senha.html" %}
+<script src="" charset="utf-8"></script>
 {% endblock  %}

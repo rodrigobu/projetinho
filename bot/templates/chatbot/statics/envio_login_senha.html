@@ -1,0 +1,34 @@
+{% load static %}
+
+
+<script src='{% static "ckeditor/ckeditor/ckeditor.js" %}'></script>
+
+<script src="{% static 'ckeditor/ckeditor/plugins/select/especiais_param_email.js' %}"></script>
+<script>
+
+
+$('#enviar_email').on('click', function() {
+  if ($("#id_assunto").val() == '') {
+    $.dialogs.error('Preencha o campo de assunto.')
+
+  }
+
+});
+
+var CAMPOS_ESPECIAIS_FEEDBACK = {
+	{% for codigo,detalhes in campos_especiais_feedback.items %}
+	'{{ codigo|safe }}' : '{{ detalhes.titulo }}' {% if not forloop.last %},{% endif %}
+	{% endfor %}
+};
+
+CKEDITOR.replace('editor1', {
+	removePlugins: 'elementspath, image',
+	removeButtons: 'About',
+	extraPlugins: 'especiais_feedback',
+
+});
+for(var i in CKEDITOR.instances) {
+	CKEDITOR.instances[i].updateElement();
+	console.log(CKEDITOR.instances[i].updateElement());
+};
+</script>
