@@ -10,6 +10,11 @@ class CadastroTextoBot(TemplateView, utils_views.MessagesView, ChatCadastro):
     template_name = 'chatbot/cadastro/cadastro.html'
     url_success = 'chatbot.cadastro.texto'
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['lista_produto'] = self.lista_produto()
+        context['lista_permissao'] = self.lista_permissao()
+        return context
 
     def post(self, *args, **kwargs):
         dados = self.request.POST.copy()

@@ -3,6 +3,7 @@ import logging
 
 from django.views.generic import View
 from django.http import JsonResponse
+from django.utils.translation import ugettext as _
 
 from chatterbot import ChatBot
 from chatterbot.utils import input_function, get_response_time
@@ -18,6 +19,7 @@ class ChatterBotApiView(View):
     """View principal do Bot.
     """
     logging.basicConfig(level=logging.INFO)
+
     PERMISSAO_PRODUTO = {
         "GCA": '1',
         "SPA": '2',
@@ -31,7 +33,8 @@ class ChatterBotApiView(View):
     PRODUTO = {
         "1": "GCA",
         "2": "SPA",
-        "4": "PCO"
+        "4": "PCO",
+        "8": "TODOS"
     }
 
     PERMISSAO = {
@@ -39,11 +42,12 @@ class ChatterBotApiView(View):
         "2": "CONSULTORIA",
         "3": "PUBLICO"
     }
+    nivel_resposta = 0.6
 
-    def get_produto(self, produto):
+    def get_produto(self, prod_bot, prod_user):
         ''' Função para trazer qual produto que está sendo requisitado
         '''
-        return self.PRODUTO[produto]
+        return self.PRODUTO[prod_bot], self.PRODUTO[prod_user]
 
     def tem_permissao_gca(self, permissao_produto):
         ''' Verifica se existe permissao para entrar no chat do GCA
@@ -98,18 +102,65 @@ class ChatterBotApiView(View):
         else:
             return False
 
-    def get_tipo_usuario(self, usuario):
+    def get_tipo_usuario(self, bot, usuario):
         ''' Verifica se a permissao para o usuario
         '''
 
-        return self.PERMISSAO[usuario]
+        return self.PERMISSAO[bot], self.PERMISSAO[usuario]
 
-    @property
-    def msg_default(self):
-        return 'Não entendi'
-        # return textos.get('desculpe_n_entendi')
+    def prepara_extra_data(self, extra_data):
+        ''' Função formata os dados de cada pergunta no formato json
+        '''
+        return json.dumps({
+            'produto' : extra_data[0],
+            'permissao_produto': extra_data[1],
+            'permissao' : extra_data[2],
+        })
 
-    nivel_resposta = 0.6
+    def get_dados_usuario(self, kwargs):
+        ''' Função para pegar todos os dados usuario
+        '''
+        produto = kwargs.get('produto')
+        permissao_produto = kwargs.get('permissao_produto')
+        tipo_user = kwargs.get('tipo_user')
+        return produto, permissao_produto, tipo_user
+
+    def verificar_conversa(self, produto, permissao_produto, perm_prod_bot, tipo_user, tipo_user_bot):
+        ''' Verifica para qual conversa o usuario e retorna a respota indicada
+        para o perfil do usuario
+        '''
+        if produto == 'GCA':
+            print ('PRODUTO GCA')
+            if self.tem_permissao_gca(perm_prod_bot) and self.tem_permissao_gca(permissao_produto):
+                print ("TEM PERMISSAO DO GCA")
+                if tipo_user == 'TI' and tipo_user_bot == "TI":
+                    print ("TIPO TI")
+                elif tipo_user == 'CONSULTORIA' and tipo_user_bot == 'CONSULTORIA':
+                    print ("TIPO CONSULTORIA")
+                elif tipo_user == 'PUBLICO' and tipo_user_bot == "PUBLICO":
+                    print ("TIPO PUBLICO")
+
+        if produto == 'SPA':
+            print ('PRODUTO SPA')
+            if self.tem_permissao_spa(perm_prod_bot) and self.tem_permissao_spa(permissao_produto):
+                print ("TEM PERMISSAO DO SPA")
+                if tipo_user == 'TI':
+                    print ("TIPO TI")
+                elif tipo_user == 'CONSULTORIA':
+                    print ("TIPO CONSULTORIA")
+                elif tipo_user == 'PUBLICO':
+                    print ("TIPO PUBLICO")
+
+        if produto == 'PCO':
+            print ('PRODUTO PCO')
+            if self.tem_permissao_pco(perm_prod_bot) and tem_permissao_pco(permissao_produto):
+                print ("TEM PERMISSAO DO PCO")
+                if tipo_user == 'TI':
+                    print ("TIPO TI")
+                elif tipo_user == 'CONSULTORIA':
+                    print ("TIPO CONSULTORIA")
+                elif tipo_user == 'PUBLICO':
+                    print ("TIPO PUBLICO")
 
     def adaptadores(self):
         """ Função que traz as respostas do bot global
@@ -185,6 +236,9 @@ class ChatterBotApiView(View):
                 conversation.statements.append(response.response.serialize())
         return conversation
 
+    @property
+    def msg_default(self):
+        return 'Não entendi'
 
     def get(self, request, *args, **kwargs):
         """
@@ -197,16 +251,11 @@ class ChatterBotApiView(View):
         })
 
     def post(self, request, *args, **kwargs):
-        """
-        Return a response to the statement in the posted data.
-
-        * The JSON data should contain a 'text' attribute.
+        """ Retorna a resposta mais adequada para a pergunta
         """
         dados = request.POST.copy()
-        
-        produto = kwargs.get('produto')
-        permissao_produto = kwargs.get('permissao_produto')
-        tipo_user = kwargs.get('tipo_user')
+
+        produto, permissao_user, tipo_user = self.get_dados_usuario(kwargs)
 
         input_data = json.loads(request.read().decode('utf-8'))
         if 'text' not in input_data:
@@ -218,164 +267,83 @@ class ChatterBotApiView(View):
         response = self.chatbot().get_response(input_data, conversation.id)
         if response.extra_data:
             extra_data = response.extra_data.split(',')
-            extra = json.dumps({
-                'produto' : extra_data[0],
-                'permissao_produto': extra_data[1],
-                'permissao' : extra_data[2],
-            })
-            print ('EXTRA', extra)
-            response.extra_data = extra
+            response.extra_data = self.prepara_extra_data(extra_data)
 
-            tipo_produto_bot = self.get_produto(extra_data[0])
-            tipo_produto_user = self.get_produto(produto)
+            tipo_user_bot, tipo_user = self.get_tipo_usuario(extra_data[2], tipo_user)
+            produto_bot, produto_user = self.get_produto(extra_data[0], produto)
+            permissao_bot = extra_data[1]
 
-            tipo_usuario_bot = self.get_tipo_usuario(extra_data[2])
-            tipo_usuario = self.get_tipo_usuario(tipo_user)
-
-            produto_gca = tipo_produto_bot == 'GCA' and  tipo_produto_user == 'GCA'
-            produto_spa = tipo_produto_bot == "SPA" and  tipo_produto_user == 'SPA'
-            produto_pco = tipo_produto_bot == "PCO" and tipo_produto_user == 'PCO'
+            produto_gca = produto_bot == 'GCA' and  produto_user == 'GCA'
+            produto_spa = produto_bot == "SPA" and  produto_user == 'SPA'
+            produto_pco = produto_bot == "PCO" and produto_user == 'PCO'
 
             if produto_gca:
-                print ('PRODUTO GCA')
-                if self.tem_permissao_gca(extra_data[1]) and self.tem_permissao_gca(permissao_produto):
-                    print ("TEM PERMISSAO DO GCA")
-                    if tipo_usuario == 'TI' and tipo_usuario_bot == "TI":
-                        print ("TIPO TI")
-                    elif tipo_usuario == 'CONSULTORIA' and tipo_usuario_bot == 'CONSULTORIA':
-                        print ("TIPO CONSULTORIA")
-                    elif tipo_usuario == 'PUBLICO' and tipo_usuario_bot == "PUBLICO":
-                        print ("TIPO PUBLICO")
-
-            if produto_spa:
-                print ('PRODUTO SPA')
-                if self.tem_permissao_spa(extra_data[1]):
-                    print ("TEM PERMISSAO DO SPA")
-                    if tipo_usuario == 'TI':
-                        print ("TIPO TI")
-                    elif tipo_usuario == 'CONSULTORIA':
-                        print ("TIPO CONSULTORIA")
-                    elif tipo_usuario == 'PUBLICO':
-                        print ("TIPO PUBLICO")
-
-            if produto_pco:
-                print ('PRODUTO PCO')
-                if self.tem_permissao_pco(extra_data[1]):
-                    print ("TEM PERMISSAO DO PCO")
-                    if tipo_usuario == 'TI':
-                        print ("TIPO TI")
-                    elif tipo_usuario == 'CONSULTORIA':
-                        print ("TIPO CONSULTORIA")
-                    elif tipo_usuario == 'PUBLICO':
-                        print ("TIPO PUBLICO")
-
+                self.verificar_conversa(
+                    'GCA',
+                    permissao_user,
+                    permissao_bot,
+                    tipo_user,
+                    tipo_user_bot
+                )
+            elif produto_spa:
+                self.verificar_conversa(
+                    'SPA',
+                    permissao_user,
+                    permissao_bot,
+                    tipo_user,
+                    tipo_user_bot
+                )
+            elif produto_pco:
+                self.verificar_conversa(
+                    'PCO',
+                    permissao_user,
+                    permissao_bot,
+                    tipo_user,
+                    tipo_user_bot
+                )
+            else:
+                response.text = 'Por favor tente outra forma'
+        print ("RESPONSE", response.extra_data)
         response_data = response.serialize()
 
-        # if not extra[0] == self.PRODUTO['GCA'] or self.PRODUTO['GCA/PCO'] or self.PRODUTO['GCA/SPA'] or self.PRODUTO['TODOS']:
-        #     print ('response_data', response_data)
         return JsonResponse(response_data, status=200)
-
-
-class ChatVaga(LogicAdapter):
-    ''' Adaptador logico para especificos para vaga
-    '''
-
-    def __init__(self, **kwargs):
-        super(ChatVaga, self).__init__(**kwargs)
-
-    def tem_resposta(self, cand_id, pergunta):
-        ''' Verifica se o candidato já respondeu todas perguntas
-        '''
-        try:
-            chat_resp = VagaEntrevistaRespostas.objects.filter(
-                candidato = cand_id,
-                vaga_entrevista = pergunta.id
-            ).exists()
-        except IndexError:
-            chat_resp = True
-        return chat_resp
-
-    def verificacao_perguntas_vaga(self, statement, cand, vaga_id, pergunta):
-        ''' Verifica se existe pergunta para avaga e se o candidato,
-        já respondeu todas elas.
-        Caso não tenha respondido ira retornar a proxima pergunta.
-        '''
-        msg_final = "Obrigado por responder nosso questionario, boa sorte!"
-        chat_perguntas = VagaEntrevista.objects.filter(vaga_id=vaga_id)
-        if chat_perguntas and not self.tem_resposta(cand, pergunta[0]) :
-            if not statement == "1_":
-                self.salvar_respostas(cand, statement.text, pergunta[0])
-                try:
-                    response_statement = Statement(pergunta[1].get_descricao())
-                    response_statement.extra_data = {
-                        'is_alternativa': pergunta[1].is_alternativa(),
-                        'alternativas': pergunta[1].get_alternativas_for_chat()
-                    }
-                except IndexError:
-                    response_statement = Statement(msg_final)
-                    response_statement.extra_data = {
-                        'is_alternativa': False,
-                        'respondida': True,
-                        'alternativas': []
-                    }
-            else:
-                response_statement = Statement(textos.get('desculpe_n_entendi'))
-        else:
-            response_statement = Statement(msg_final)
-        response_statement.confidence = 1
-        return response_statement
-
-    def salvar_respostas(self, cand_id, resposta, pergunta):
-        ''' Processo de salvamento das respostas
-        '''
-        obj = VagaEntrevistaRespostas.objects.create(
-            vaga_entrevista_id = pergunta.id,
-            candidato_id = cand_id,
-            resposta = resposta.replace("1_","").replace("1 ","")
-        )
-        obj.candidato.atualizar_data_atualizacao()
-
-    def validacao_pergunta(self, statement, vaga_id, cand_id):
-        ''' Valida se tem pergunta para vaga selecionada
-        '''
-        pergunta = []
-        chat_perguntas = VagaEntrevista.objects.filter(vaga_id=vaga_id)
-        chat_resp = VagaEntrevistaRespostas()
-
-        for perg in chat_perguntas:
-            if not self.tem_resposta(cand_id, perg):
-                pergunta.append(perg)
-
-        response_statement = self.verificacao_perguntas_vaga(
-            statement,
-            cand_id,
-            vaga_id,
-            pergunta
-        )
-
-        return response_statement
-
-    def process(self, statement, **kwargs):
-        ''' Executa o processo do chatbot.
-        '''
-        cand, vaga = statement.extra_data
-        response_statement = self.validacao_pergunta(statement, vaga, cand)
-        self.response_statement = response_statement
-        return response_statement
 
 
 class ChatCadastro(object):
     ''' Class para salvar para fazer tratamento para salvar os dados no banco
     '''
+    def lista_produto(self):
+        return (
+            (1, _('GCA')),
+            (2, _('SPA')),
+            (4, _('PCO')),
+            (8, _('TODOS')),
+        )
+
+    def lista_permissao(self):
+        return (
+            (2, _('CONSULTORIA')),
+            (3, _('PUBLICO')),
+            (1, _('SUPORTE')),
+        )
+
+    def tratar_extra(self, permissao, produto):
+        extra = '{produto},{produto},{permissao}'.format(
+            permissao=permissao,
+            produto=produto
+        )
+        return extra
 
     def salvar(self, dados, statement=None):
         from chatterbot.ext.django_chatterbot.models import Statement
 
         if not statement:
             statement = Statement()
-        print (statement)
+        print ('dados',dados)
         statement.text = dados.get('texto')
-        campo_extra = dados.get('campos_extra')
+        permissao = dados.get('permissao')
+        produto = dados.get('produto')
+        campo_extra = self.tratar_extra(permissao, produto)
         if not campo_extra:
             campo_extra = ''
         statement.extra_data = campo_extra

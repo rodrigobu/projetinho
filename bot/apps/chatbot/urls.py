@@ -20,15 +20,15 @@ urlpatterns = [
         name='chatbot.bot_entrevista'
     ),
 
-    path('json/entrevista/<vaga>/<candidato>',
-        chatbot.bot_entrevista,
-        name='chatbot.bot_entrevista'
-    ),
-
-    path('json/adpt/<vaga>/<candidato>',
-        chatbot.chat_entrevista,
-        name='chatbot.chat_entrevista'
-    ),
+    # path('json/entrevista/<vaga>/<candidato>',
+    #     chatbot.bot_entrevista,
+    #     name='chatbot.bot_entrevista'
+    # ),
+    #
+    # path('json/adpt/<vaga>/<candidato>',
+    #     chatbot.chat_entrevista,
+    #     name='chatbot.chat_entrevista'
+    # ),
 
     path('audio/',
         chatbot.chat_audio_video,

@@ -23,10 +23,10 @@
     	      {% csrf_token %}
     	      <div class="panel panel-default">
                   <div class="row">
+										{% textarea label='Texto do Bot' name="texto" cols='col-md-6' linhas=3 %}
 
-                  {% textarea label='Texto do Bot' name="texto" cols='col-md-6' linhas=3 %}
-                  {% input_text label=funcao.descricao_verbose name='descricao' cols='col-md-6' max_len=funcao.descricao_max_length value=funcao.descricao required=funcao.descricao_required %}
-                  {% select_simple label=funcao.area_funcao_verbose name='area_funcao' cols='col-md-3' value=funcao.area_funcao_id required=funcao.area_funcao_required selected_id=funcao.area_funcao_id list=area_funcao %}
+                  {% select_simple label='Permissão de Usuário' name='permissao' cols='col-md-3'  required=True options=lista_permissao %}
+                  {% select_simple label='Tipo do Produto' name='produto' cols='col-md-3'  required=True options=lista_produto %}
 
                   </div>
     		      <div class="panel-body"  style="padding: 0px;">

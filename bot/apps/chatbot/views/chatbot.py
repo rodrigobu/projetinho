@@ -9,7 +9,7 @@ from django.core.files.base import ContentFile
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
 
-from apps.chatbot.mixins import ChatterBotApiView, ChatVaga
+from apps.chatbot.mixins import ChatterBotApiView
 
 @method_decorator(csrf_exempt, name='dispatch') # Esta view não  necessita do csrf
 class BotGlobal(ChatterBotApiView):
@@ -20,12 +20,12 @@ class BotGlobal(ChatterBotApiView):
 bot_global = BotGlobal.as_view()
 
 
-class ChatEntrevista(ChatVaga, View):
-    ''' Class extendida do Adaptador Logico.
-    '''
-    pass
+# class ChatEntrevista(ChatVaga, View):
+#     ''' Class extendida do Adaptador Logico.
+#     '''
+#     pass
 
-chat_entrevista = ChatEntrevista.as_view()
+# chat_entrevista = ChatEntrevista.as_view()
 
 class BotEntrevista(ChatterBotApiView):
     def adaptadores(self):
