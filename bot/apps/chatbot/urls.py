@@ -10,6 +10,11 @@ urlpatterns = [
         name='chatbot.bot_global'
     ),
 
+    path('json/<produto>/<permissao_produto>/<tipo_user>',
+        chatbot.bot_global,
+        name='chatbot.bot_global'
+    ),
+
     path('json/entrevista/',
         chatbot.bot_entrevista,
         name='chatbot.bot_entrevista'

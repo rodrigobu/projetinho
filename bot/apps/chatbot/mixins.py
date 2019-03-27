@@ -18,6 +18,91 @@ class ChatterBotApiView(View):
     """View principal do Bot.
     """
     logging.basicConfig(level=logging.INFO)
+    PERMISSAO_PRODUTO = {
+        "GCA": '1',
+        "SPA": '2',
+        "GCA/SPA": '3',
+        "PCO": '4',
+        "GCA/PCO": '5',
+        "PCO/SPA": '6',
+        "TODOS": '8'
+    }
+
+    PRODUTO = {
+        "1": "GCA",
+        "2": "SPA",
+        "4": "PCO"
+    }
+
+    PERMISSAO = {
+        "1": "TI",
+        "2": "CONSULTORIA",
+        "3": "PUBLICO"
+    }
+
+    def get_produto(self, produto):
+        ''' Função para trazer qual produto que está sendo requisitado
+        '''
+        return self.PRODUTO[produto]
+
+    def tem_permissao_gca(self, permissao_produto):
+        ''' Verifica se existe permissao para entrar no chat do GCA
+        '''
+        if permissao_produto == self.PERMISSAO_PRODUTO['GCA']:
+            return True
+
+        elif permissao_produto == self.PERMISSAO_PRODUTO['GCA/SPA']:
+            return True
+
+        elif permissao_produto == self.PERMISSAO_PRODUTO['GCA/PCO']:
+            return True
+
+        elif permissao_produto == self.PERMISSAO_PRODUTO['TODOS']:
+            return True
+        else:
+            return False
+
+    def tem_permissao_spa(self, permissao_produto):
+        ''' Verifica se existe permissao para entrar no chat do SPA
+        '''
+
+        if permissao_produto == self.PERMISSAO_PRODUTO['SPA']:
+            return True
+
+        elif permissao_produto == self.PERMISSAO_PRODUTO['GCA/SPA']:
+            return True
+
+        elif permissao_produto == self.PERMISSAO_PRODUTO['PCO/SPA']:
+            return True
+
+        elif permissao_produto == self.PERMISSAO_PRODUTO['TODOS']:
+            return True
+        else:
+            return False
+
+    def tem_permissao_pco(self, permissao_produto):
+        ''' Verifica se existe permissao para entrar no chat do PCO
+        '''
+
+        if permissao_produto == self.PERMISSAO_PRODUTO['PCO']:
+            return True
+
+        elif permissao_produto == self.PERMISSAO_PRODUTO['PCO/SPA']:
+            return True
+
+        elif permissao_produto == self.PERMISSAO_PRODUTO['GCA/PCO']:
+            return True
+
+        elif permissao_produto == self.PERMISSAO_PRODUTO['TODOS']:
+            return True
+        else:
+            return False
+
+    def get_tipo_usuario(self, usuario):
+        ''' Verifica se a permissao para o usuario
+        '''
+
+        return self.PERMISSAO[usuario]
 
     @property
     def msg_default(self):
@@ -118,6 +203,11 @@ class ChatterBotApiView(View):
         * The JSON data should contain a 'text' attribute.
         """
         dados = request.POST.copy()
+        
+        produto = kwargs.get('produto')
+        permissao_produto = kwargs.get('permissao_produto')
+        tipo_user = kwargs.get('tipo_user')
+
         input_data = json.loads(request.read().decode('utf-8'))
         if 'text' not in input_data:
             return JsonResponse({
@@ -126,15 +216,63 @@ class ChatterBotApiView(View):
 
         conversation = self.get_conversation(request)
         response = self.chatbot().get_response(input_data, conversation.id)
-        extra = response.extra_data
-        if extra:
+        if response.extra_data:
+            extra_data = response.extra_data.split(',')
             extra = json.dumps({
-                'gca' : extra,
+                'produto' : extra_data[0],
+                'permissao_produto': extra_data[1],
+                'permissao' : extra_data[2],
             })
             print ('EXTRA', extra)
-        print ("response", response.extra_data)
-        response.extra_data = extra
+            response.extra_data = extra
+
+            tipo_produto_bot = self.get_produto(extra_data[0])
+            tipo_produto_user = self.get_produto(produto)
+
+            tipo_usuario_bot = self.get_tipo_usuario(extra_data[2])
+            tipo_usuario = self.get_tipo_usuario(tipo_user)
+
+            produto_gca = tipo_produto_bot == 'GCA' and  tipo_produto_user == 'GCA'
+            produto_spa = tipo_produto_bot == "SPA" and  tipo_produto_user == 'SPA'
+            produto_pco = tipo_produto_bot == "PCO" and tipo_produto_user == 'PCO'
+
+            if produto_gca:
+                print ('PRODUTO GCA')
+                if self.tem_permissao_gca(extra_data[1]) and self.tem_permissao_gca(permissao_produto):
+                    print ("TEM PERMISSAO DO GCA")
+                    if tipo_usuario == 'TI' and tipo_usuario_bot == "TI":
+                        print ("TIPO TI")
+                    elif tipo_usuario == 'CONSULTORIA' and tipo_usuario_bot == 'CONSULTORIA':
+                        print ("TIPO CONSULTORIA")
+                    elif tipo_usuario == 'PUBLICO' and tipo_usuario_bot == "PUBLICO":
+                        print ("TIPO PUBLICO")
+
+            if produto_spa:
+                print ('PRODUTO SPA')
+                if self.tem_permissao_spa(extra_data[1]):
+                    print ("TEM PERMISSAO DO SPA")
+                    if tipo_usuario == 'TI':
+                        print ("TIPO TI")
+                    elif tipo_usuario == 'CONSULTORIA':
+                        print ("TIPO CONSULTORIA")
+                    elif tipo_usuario == 'PUBLICO':
+                        print ("TIPO PUBLICO")
+
+            if produto_pco:
+                print ('PRODUTO PCO')
+                if self.tem_permissao_pco(extra_data[1]):
+                    print ("TEM PERMISSAO DO PCO")
+                    if tipo_usuario == 'TI':
+                        print ("TIPO TI")
+                    elif tipo_usuario == 'CONSULTORIA':
+                        print ("TIPO CONSULTORIA")
+                    elif tipo_usuario == 'PUBLICO':
+                        print ("TIPO PUBLICO")
+
         response_data = response.serialize()
+
+        # if not extra[0] == self.PRODUTO['GCA'] or self.PRODUTO['GCA/PCO'] or self.PRODUTO['GCA/SPA'] or self.PRODUTO['TODOS']:
+        #     print ('response_data', response_data)
         return JsonResponse(response_data, status=200)
 
 

@@ -255,7 +255,7 @@
     console.log(inputData);
     var $submit = $.ajax({
       type: 'POST',
-      url: chatterbotUrl,
+      url: chatterbotUrl +"1/1/3"
       data: JSON.stringify(inputData),
       global: false, /*Para cancelar o carregamento do ajax*/
       contentType: 'application/json'
@@ -264,7 +264,7 @@
     $submit.done(function(statement) {
         createRowBot(statement.text);
         // Clear the input field
-
+        statement.extra_data
         if (statement.extra_data == 'objetiva') {
           var input_btn = '<input type="button" id="js-btn-left" class="btn btn-success btn_esquerdo col-md-5 col-xs-5" value="Sim"/>'
           + '<input type="button" id="js-btn-right" class=" btn btn-danger btn_direito col-md-5 col-xs-5" value="Não"/>';

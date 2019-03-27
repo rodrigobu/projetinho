@@ -203,7 +203,7 @@ function submitInput(input_val, input_resp) {
   $submit.done(function(statement) {
     createRowBot(statement.text);
     // Clear the input field
-    console.log(statement.extra_data.gca);
+    console.log(statement.extra_data.permissao);
     if (statement.extra_data.is_alternativa) {
       var input_btn = '';
       if (statement.extra_data.alternativas.length!=0) {
