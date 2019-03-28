@@ -50,9 +50,9 @@ urlpatterns = [
         cadastro.cadastro_conversa,
         name="chatbot.cadastro.conversa"
     ),
-    # path('edicao/<slug:id>/',
-    #     edicao.edicao_texto,
-    #     name='chatbot.edicao.texto'
-    # ),
+    path('edicao/conversa/<slug:id>/',
+        edicao.edicao_conversa,
+        name='chatbot.edicao.conversa'
+    ),
 
 ]

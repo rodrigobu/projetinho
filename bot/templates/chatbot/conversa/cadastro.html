@@ -25,8 +25,8 @@
     	      <div class="panel panel-default">
                   <div class="row">
 
-                  {% select_simple label='Pergunta do Usuário' name='permissao' cols='col-md-6' selected_id=permissao_id required=True list=lista_pergunta %}
-                  {% select_simple label='Respota do ChatBot' name='produto' cols='col-md-6' selected_id=produto_id required=True list=lista_resposta %}
+                  {% select_simple label='Pergunta do Usuário' name='pergunta_usuario' cols='col-md-6' selected_id=resposta.statement_id required=True list=lista %}
+                  {% select_simple label='Respota do ChatBot' name='resposta_bot' cols='col-md-6' selected_id=resposta.response_id required=True list=lista %}
 
 
                   </div>

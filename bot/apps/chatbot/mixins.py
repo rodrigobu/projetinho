@@ -339,7 +339,6 @@ class ChatCadastro(object):
 
         if not statement:
             statement = Statement()
-        print ('dados',dados)
         statement.text = dados.get('msg')
         permissao = dados.get('permissao')
         produto = dados.get('produto')
@@ -351,4 +350,21 @@ class ChatCadastro(object):
 
 
 class ChatConversa(object):
-    pass
+
+    def salvar(self, dados, resposta=None):
+        from chatterbot.ext.django_chatterbot.models import Response, Statement
+
+        if not resposta:
+            resposta = Response()
+
+        pergunta_usuario = dados.get('pergunta_usuario')
+        pergunta = Statement.objects.get(id=pergunta_usuario)
+
+        resposta_bot = dados.get('resposta_bot')
+        resposta_bot = Statement.objects.get(id=resposta_bot)
+
+        if pergunta:
+            resposta.statement_id = pergunta.id
+        if resposta_bot:
+            resposta.response_id = resposta_bot.id
+        resposta.save()

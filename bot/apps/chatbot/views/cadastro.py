@@ -34,8 +34,7 @@ cadastro_texto = CadastroTextoBot.as_view()
 
 class CadastroConversaBot(TemplateView, utils_views.MessagesView, ChatConversa):
     template_name = 'chatbot/conversa/cadastro.html'
-    url_success = 'chatbot.cadastro.texto'
-
+    url_success = 'chatbot.cadastro.conversa'
 
     def get_queryset_from(self):
         queryset = Statement.objects.only('id', 'text')\
@@ -43,14 +42,19 @@ class CadastroConversaBot(TemplateView, utils_views.MessagesView, ChatConversa):
         return queryset
 
     def get_title(self):
-        return "Conversa do ChatBot"
+        return "Cadastro de Conversa do ChatBot"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['lista_pergunta'] = self.get_queryset_from()
-        context['lista_resposta'] = self.get_queryset_from()
+        context['lista'] = self.get_queryset_from()
         context['title'] = self.get_title()
 
         return context
+
+    def post(self, *args, **kwargs):
+        print ('dados', dados)
+        self.salvar(dados)
+        self.success('Conversa do chatbot foi salvo com sucesso')
+        return HttpResponseRedirect(reverse(self.url_success))
 
 cadastro_conversa = CadastroConversaBot.as_view()
