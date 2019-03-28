@@ -122,7 +122,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = (
-    os.path.join(PROJECT_EXTERNAL, 'spa-static/static/'),
+    os.path.join(PROJECT_EXTERNAL, 'chatbot-static/static/'),
     os.path.join(PROJECT_EXTERNAL, "global_static/html/static/"),
 )
 

@@ -35,7 +35,7 @@ urlpatterns = [
         name='chatbot.audio_video'
     ),
 
-    #cadastro
+    #cadastro texto
     path('cadastro/',
         cadastro.cadastro_texto,
         name="chatbot.cadastro.texto"
@@ -44,5 +44,15 @@ urlpatterns = [
         edicao.edicao_texto,
         name='chatbot.edicao.texto'
     ),
+
+    #cadastro conversa
+    path('cadastro/conversa',
+        cadastro.cadastro_conversa,
+        name="chatbot.cadastro.conversa"
+    ),
+    # path('edicao/<slug:id>/',
+    #     edicao.edicao_texto,
+    #     name='chatbot.edicao.texto'
+    # ),
 
 ]

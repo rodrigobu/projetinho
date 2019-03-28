@@ -340,7 +340,7 @@ class ChatCadastro(object):
         if not statement:
             statement = Statement()
         print ('dados',dados)
-        statement.text = dados.get('texto')
+        statement.text = dados.get('msg')
         permissao = dados.get('permissao')
         produto = dados.get('produto')
         campo_extra = self.tratar_extra(permissao, produto)
@@ -348,3 +348,7 @@ class ChatCadastro(object):
             campo_extra = ''
         statement.extra_data = campo_extra
         statement.save()
+
+
+class ChatConversa(object):
+    pass
