@@ -1,0 +1,15 @@
+.span_cliente {
+  font-size: large;
+  padding: 15px 0;
+}
+
+.desc_qtde_vagas {
+  padding: 0px !important;
+  color: #666;
+  margin: 10px 0 0 0;
+  text-decoration: none;
+}
+
+.desc_qtde_vagas p {
+  text-align: center
+}

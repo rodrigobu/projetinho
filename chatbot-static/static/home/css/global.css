@@ -1,0 +1,23 @@
+
+@media (max-width: 767px) {
+  .block-right {
+      float: none !important;
+  }
+}
+@media (min-width: 768px) {
+  .block-right {
+      float: right !important;
+  }
+}
+
+
+@media (max-width: 767px) {
+  .block-left {
+      float: none !important;
+  }
+}
+@media (min-width: 768px) {
+  .block-left {
+      float: left !important;
+  }
+}

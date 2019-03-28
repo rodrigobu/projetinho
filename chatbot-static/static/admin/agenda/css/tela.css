@@ -1,0 +1,90 @@
+.block-scroll {
+  overflow-y: scroll;
+  max-height: 300px;
+}
+
+.fc-listWeek-view, .fc-listDay-view {
+  padding: 0px !important;
+  border: 1px solid #dddddd !important;
+}
+
+.calendar-sidebar>.panel-default {
+  margin-bottom: 15px !important;
+  padding: 20px 15px 10px 15px;
+}
+
+.comp_hoje {
+  padding-top: 0px !important;
+  padding-bottom: 0px !important;
+  cursor: pointer;
+}
+
+.add_evento {
+  z-index: 999999;
+}
+
+.title_compromisso {
+  font-size: 14px;
+  overflow: hidden !important;
+  padding-left: 5px !important;
+}
+
+.event_container {
+  padding-bottom: 0px !important;
+  cursor: move !important;
+  margin-right: 5px;
+}
+
+.event_container>span {
+  overflow: hidden !important;
+  padding-left: 5px !important;
+}
+
+.evento_excluir, .evento_abrir {
+  margin-top: 6px;
+}
+
+button.btn.btn-white.multiselect-clear-filter {
+  height: 42px;
+}
+
+input.form-control.multiselect-search {
+  height: 42px;
+}
+
+.compromissos_dia_text {
+  font-size: 14px;
+  background: #f5f5f5;
+  border: 1px solid #e4e4e4;
+  padding: 10px;
+}
+
+.fc-today {
+  background: #FFF !important;
+  border: none !important;
+  border-top: 1px solid #ddd !important;
+  font-weight: bolder;
+}
+
+.calendar-env .calendar-main .fc .fc-today, .lbl_legend_today {
+  background-color: #f3f1cf !important;
+  color: #b76633 !important;
+}
+
+.fc-dia-selected, .lbl_legend_selected {
+  background-color: #cfe2f3 !important;
+  color: #337ab7 !important;
+}
+
+.fc-evento-retroativo, .lbl_legend_retroativo {
+  background-color: gray !important;
+  border-color: rgb(80, 79, 79) !important;
+}
+
+.lbl_legend_compromisso {
+  background-color: #3a87ad;
+}
+
+.lbl_legend_urgente {
+  background-color: #e24646;
+}

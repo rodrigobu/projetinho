@@ -1,0 +1,37 @@
+.xe-progress-counter-white,
+.xe-progress-counter-white .xe-upper,
+.xe-progress-counter-white .xe-upper .xe-icon,
+.xe-progress-counter-white .xe-upper .xe-label,
+.xe-progress-counter-white .xe-lower,
+.xe-progress-counter-white .xe-background {
+  color: #000 !important;
+  background: #fff !important;
+}
+
+.xe-progress-counter-white .xe-upper .xe-icon i,
+.xe-progress-counter-white .xe-upper .xe-label span,
+.xe-progress-counter-white .xe-upper .xe-label .num {
+  color: #000 !important;
+}
+
+.xe-progress-counter-info,  .xe-progress-counter-white, .xe-vertical-counter-white {
+  min-height: 110px;
+    -webkit-box-shadow: 0 1px 1px rgba(0,1,1,.08);
+    -moz-box-shadow: 0 1px 1px rgba(0,1,1,.08);
+    box-shadow: 0 1px 1px rgba(0,1,1,.08);
+}
+
+.xe-progress-counter-white .xe-upper .xe-label span,
+.xe-progress-counter-info .xe-upper .xe-label span {
+  font-size: 12px !important;
+}
+
+.xe-icon{
+  display: inherit!important;
+}
+
+@media (min-width: 750px) and (max-width: 1263px) {
+  .xe-icon{
+    display: inherit!important;
+  }
+}

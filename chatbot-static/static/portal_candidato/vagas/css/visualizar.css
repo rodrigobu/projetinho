@@ -1,0 +1,30 @@
+.no_padding_panel {
+  padding: 0px !important;
+}
+
+.div-primary-panel {
+  padding-left: 15px !important;
+  padding-top: 15px !important;
+  border-bottom-width: 0px !important;
+}
+
+.div-primary-panel i {
+  margin-right: 2px !important;
+}
+
+.list-group-panel {
+  margin-bottom: 0px !important;
+}
+
+.container_outras_informacoes>.container-fluido>.row {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.container_outras_informacoes>.container-fluido>.row>[class*='col-'] {
+  display: flex;
+  flex-direction: column;
+}
