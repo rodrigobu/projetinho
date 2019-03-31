@@ -404,7 +404,7 @@ class ChatConversa(object):
 
         permissao = dados.get('permissao')
         produto = dados.get('produto')
-
+        
 
         campo_extra = self.tratar_extra(permissao, produto)
         resposta_bot.extra_data = campo_extra

@@ -30,16 +30,24 @@ class ExclusaoView(JSONView):
     def get_context_data(self, *args, **kwargs):
         url = self.request.META.get("PATH_INFO","")
         obj = self.get_object()
-        
+
         if self.acao == 'conversa':
             self.criar_log_exclusao(obj.id, obj, url)
         else:
             self.criar_log_exclusao(obj.id, self.acao, url)
 
-        self.get_object().delete()
-
-        return self.return_ok()
-        # return True, ""
+        if self.acao == 'textos':
+            resp = Response.objects.filter(response_id=obj.id).exists()
+            perg = Response.objects.filter(statement_id=obj.id).exists()
+            if not perg and not resp:
+                obj.delete()
+                return self.return_ok()
+            return self.return_status_nok('''Existe conversas do ChatBot que
+                contém este texto, desvincule esse texto para poder ser excluído
+                ''')
+        else:
+            obj.delete()
+            return self.return_ok()
 
 
 class ExclusaoConversa(ExclusaoView):
@@ -47,3 +55,10 @@ class ExclusaoConversa(ExclusaoView):
     acao = 'conversa'
 
 exclusao_conversa = ExclusaoConversa.as_view()
+
+
+class ExclusaoTexto(ExclusaoView):
+    model = Statement
+    acao = 'textos'
+
+exclusao_texto = ExclusaoTexto.as_view()

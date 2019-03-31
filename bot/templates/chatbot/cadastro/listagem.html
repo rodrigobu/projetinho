@@ -28,9 +28,9 @@
 {% include "statics/js/formularios.html" %}
 
 <script>
-var URL_CONSULTA = '{% url "chatbot.listagem.conversa.json" %}';
-var URL_EDICAO = "{% url 'chatbot.edicao.conversa' %}"
-var URL_EXCLUSAO = "{% url 'chatbot.exclusao.conversa' %}"
+var URL_CONSULTA = '{% url "chatbot.listagem.texto.json" %}';
+var URL_EDICAO = "{% url 'chatbot.edicao.texto' %}"
+var URL_EXCLUSAO = "{% url 'chatbot.exclusao.texto' %}"
 var ICON_DELETE = '{{ ICONES.delete }}';
 var ICON_EDIT = '{{ ICONES.edit }}'
 var TABELA_CONSULTA = undefined;
@@ -59,60 +59,12 @@ function criar_conversa(){
            }
        },
        {
-          "mData": "Pergunta",
+          "mData": "Textos",
 		  'orderable': true,
           'searchable': true,
           'class':'col-md-3',
           "mRender": function ( data, type, full ) {
-            return full.pergunta;
-          }
-	   },
-       {
-          "mData": "Resposta",
-		  'orderable': true,
-          'searchable': true,
-          'class':'col-md-4',
-          "mRender": function ( data, type, full ) {
-            return full.resposta;
-          }
-	   },
-       {
-          "mData": "Produto",
-		  'orderable': true,
-          'searchable': true,
-          'class':'col-md-1',
-          "mRender": function ( data, type, full ) {
-            let produto = full.extra_data.split(',')[0]
-            if (produto == '1') {
-              return 'GCA';
-            } else if (produto == '2') {
-                return 'SPA';
-            } else if (produto == '3') {
-                return 'PCO';
-            } else if (produto == '8') {
-                return 'TODOS'
-            } else {
-                return 'Sem Produto';
-            }
-          }
-	   },
-       {
-          "mData": "Permissão",
-		  'orderable': true,
-          'searchable': true,
-          'class':'col-md-2',
-          "mRender": function ( data, type, full ) {
-            let permissao = full.extra_data.split(',')[2]
-            if (permissao == '1') {
-                return 'SUPORTE';
-            } else if (permissao == '2') {
-                return 'CONSULTORIA';
-            } else if (permissao == '3') {
-                return 'PUBLICO'
-            }else {
-                return '';
-
-            }
+            return full.text;
           }
 	   },
 
@@ -138,8 +90,12 @@ function excluir_registro(registro){
       async : false,
       data : { id : registro },
       success : function(dados) {
-        $.dialogs.success(ALERTA_SUC_EXC);
-        consultar();
+		if (dados.status == 'ok') {
+			$.dialogs.success(ALERTA_SUC_EXC);
+			consultar();
+		} else {
+			$.dialogs.error(dados.msg)
+		}
       }
     });
   });

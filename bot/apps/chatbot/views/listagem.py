@@ -23,6 +23,21 @@ class ListaConversaChat(TemplateView, utils_views.MessagesView):
 listagem_conversa = ListaConversaChat.as_view()
 
 
+class ListaTextoChat(TemplateView, utils_views.MessagesView):
+    template_name = 'chatbot/cadastro/listagem.html'
+
+    def get_title(self):
+
+        return "Listagem de Texto do ChatBot"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = self.get_title()
+        return context
+
+listagem_texto = ListaTextoChat.as_view()
+
+
 class ListagemConversaJSON(utils_views.JSONView):
     '''
     Retorna todas as filiais do sistema em formato JSON para popular o
@@ -51,3 +66,31 @@ class ListagemConversaJSON(utils_views.JSONView):
         }
 
 listagem_conversa_json = ListagemConversaJSON.as_view()
+
+
+class ListagemConversaJSON(utils_views.JSONView):
+    '''
+    Retorna todas as filiais do sistema em formato JSON para popular o
+    Datatables.
+    '''
+
+    def get_textos(self):
+        '''
+        Retorna todas as filiais cadastrados no sistema em formato dict.
+        '''
+        SQL = '''
+            SELECT
+                id,
+                text,
+                extra_data
+            FROM django_chatterbot_statement
+        '''
+        return sql_to_dict(SQL)
+
+    def get_context_data(self, *args, **kwargs):
+        registros = self.get_textos()
+        return {
+            'aaData': registros
+        }
+
+listagem_texto_json = ListagemConversaJSON.as_view()

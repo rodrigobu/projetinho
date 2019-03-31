@@ -9,7 +9,7 @@ from chatterbot.ext.django_chatterbot.models import Statement
 
 class CadastroTextoBot(TemplateView, utils_views.MessagesView, ChatCadastro):
     template_name = 'chatbot/cadastro/cadastro.html'
-    url_success = 'chatbot.cadastro.texto'
+    url_success = 'chatbot.listagem.texto'
 
     def get_title(self):
         return "Cadastro do texto do ChatBot"
@@ -33,7 +33,7 @@ cadastro_texto = CadastroTextoBot.as_view()
 
 class CadastroConversaBot(TemplateView, utils_views.MessagesView, ChatConversa):
     template_name = 'chatbot/conversa/cadastro.html'
-    url_success = 'chatbot.cadastro.conversa'
+    url_success = 'chatbot.listagem.conversa'
 
     def get_queryset_from(self):
         queryset = Statement.objects.only('id', 'text')\

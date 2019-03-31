@@ -10,17 +10,10 @@ from apps.utils import views as utils_views
 
 class EdicaoTextoBot(TemplateView, utils_views.MessagesView, ChatCadastro):
     template_name = 'chatbot/cadastro/cadastro.html'
-    url_success = 'chatbot.edicao.texto'
+    url_success = 'chatbot.listagem.texto'
 
     def get_object(self):
         return Statement.objects.get(id=self.kwargs.get("id"))
-
-    def get_url_sucesso(self):
-        return reverse(
-            self.url_success,
-            kwargs = {
-                'id': self.get_object().id,
-            })
 
     def get_title(self):
         return "Edição do texto do ChatBot"
@@ -38,13 +31,13 @@ class EdicaoTextoBot(TemplateView, utils_views.MessagesView, ChatCadastro):
     def post(self, *args, **kwargs):
         self.salvar(self.request, self.get_object())
         self.success('Texto do Bot salvo')
-        return HttpResponseRedirect(self.get_url_sucesso())
+        return HttpResponseRedirect(reverse(self.url_success))
 
 edicao_texto = EdicaoTextoBot.as_view()
 
 class EdicaoConversaBot(TemplateView, utils_views.MessagesView, ChatConversa):
     template_name = 'chatbot/conversa/cadastro.html'
-    url_success = 'chatbot.edicao.conversa'
+    url_success = 'chatbot.listagem.conversa'
 
     def get_object(self):
         return Response.objects.get(id=self.kwargs.get("id"))
@@ -71,7 +64,7 @@ class EdicaoConversaBot(TemplateView, utils_views.MessagesView, ChatConversa):
         extra = statement.extra_data.split(',')
 
         context['produto_id'] = extra[0]
-        context['permissao_id'] = extra[1]
+        context['permissao_id'] = extra[2]
         context['lista'] = self.get_queryset_from()
         context['resposta'] = self.get_object()
         context['title'] = self.get_title()
@@ -83,6 +76,6 @@ class EdicaoConversaBot(TemplateView, utils_views.MessagesView, ChatConversa):
     def post(self, *args, **kwargs):
         self.salvar(self.request, self.get_object())
         self.success('Texto do Bot salvo')
-        return HttpResponseRedirect(self.get_url_sucesso())
+        return HttpResponseRedirect(reverse(self.url_success))
 
 edicao_conversa = EdicaoConversaBot.as_view()

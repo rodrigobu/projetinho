@@ -49,6 +49,20 @@ urlpatterns = [
         name='chatbot.edicao.texto'
     ),
 
+    path('listagem/',
+        listagem.listagem_texto,
+        name='chatbot.listagem.texto'
+    ),
+    path('listagem/json/',
+        listagem.listagem_texto_json,
+        name='chatbot.listagem.texto.json'
+    ),
+
+    path('exclusao/',
+        exclusao.exclusao_texto,
+        name='chatbot.exclusao.texto'
+    ),
+
     #cadastro conversa
     path('cadastro/conversa/',
         cadastro.cadastro_conversa,
@@ -77,10 +91,4 @@ urlpatterns = [
         exclusao.exclusao_conversa,
         name='chatbot.exclusao.conversa'
     ),
-    path('exclusao/conversa/<slug:id>/',
-        exclusao.exclusao_conversa,
-        name='chatbot.exclusao.conversa'
-    ),
-
-
 ]
