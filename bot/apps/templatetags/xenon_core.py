@@ -3,7 +3,7 @@ from django import template
 register = template.Library()
 
 
-@register.inclusion_tag('global/templatetags/xenon_core/page_title.html')
+@register.inclusion_tag('templatetags/xenon_core/page_title.html')
 def page_title(**kwargs):
     '''  Cria o html para os titulos das páginas.
     Parâmetros:
@@ -18,7 +18,7 @@ def page_title(**kwargs):
         'class' : kwargs.get('class', "div-primary"),
     }
 
-@register.inclusion_tag('global/templatetags/xenon_core/counter.html')
+@register.inclusion_tag('templatetags/xenon_core/counter.html')
 def counter(**kwargs):
     '''  Cria o html para a div counter usadas no menu e submenus do sistema.
     Parâmetros:
@@ -38,7 +38,7 @@ def counter(**kwargs):
         'tooltip' : kwargs.get('tooltip', ""),
     }
 
-@register.inclusion_tag('global/templatetags/xenon_core/counter_block.html')
+@register.inclusion_tag('templatetags/xenon_core/counter_block.html')
 def counter_block(**kwargs):
     '''  Cria o html para a div counter-block usadas no menu e submenus do
     sistema.
@@ -53,7 +53,7 @@ def counter_block(**kwargs):
         'link' : kwargs.get('link', ""),
     }
 
-@register.inclusion_tag('global/templatetags/xenon_core/counter_block_main.html')
+@register.inclusion_tag('templatetags/xenon_core/counter_block_main.html')
 def counter_block_main(**kwargs):
     '''  Cria o html para a div counter-block com quantidades e subtitulo
     usadas no menu e submenus do sistema.
@@ -81,7 +81,7 @@ def counter_block_main(**kwargs):
         'nova_aba' : kwargs.get('nova_aba', False),
     }
 
-@register.inclusion_tag('global/templatetags/xenon_core/panel_heading.html')
+@register.inclusion_tag('templatetags/xenon_core/panel_heading.html')
 def panel_heading(**kwargs):
     '''  Cria o html do cabeçalho de paineis e os icones de controle
     Parâmetros:

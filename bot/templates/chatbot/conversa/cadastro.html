@@ -23,13 +23,16 @@
           <form method="post" id="form_dados" enctype='multipart/form-data' data-parsley-validate>
     	      {% csrf_token %}
     	      <div class="panel panel-default">
+				  <div class="row">
+					  {% select_simple label='Permissão do Usuário' name='permissao' cols='col-md-3' selected_id=permissao_id required=True options=lista_permissao %}
+					  {% select_simple label='Tipo do Produto' name='produto' cols='col-md-3' selected_id=produto_id required=True options=lista_produto %}
+				  </div>
+
                   <div class="row">
-
-                  {% select_simple label='Pergunta do Usuário' name='pergunta_usuario' cols='col-md-6' selected_id=resposta.statement_id required=True list=lista %}
-                  {% select_simple label='Respota do ChatBot' name='resposta_bot' cols='col-md-6' selected_id=resposta.response_id required=True list=lista %}
-
-
+	                  {% select_simple label='Pergunta do Usuário' name='pergunta_usuario' cols='col-md-6' selected_id=resposta.statement_id required=True list=lista %}
+	                  {% select_simple label='Respota do ChatBot' name='resposta_bot' cols='col-md-6' selected_id=resposta.response_id required=True list=lista %}
                   </div>
+
     		      <div class="panel-body"  style="padding: 0px;">
 
     				<fieldset class="row margin-top-15" id="salvar_segundo_form">
@@ -53,6 +56,4 @@
 {% block custom_js %}
 {% include 'statics/js/datatables.html' %}
 {% include "statics/js/formularios.html" %}
-{% include "chatbot/statics/envio_login_senha.html" %}
-<script src="" charset="utf-8"></script>
 {% endblock  %}

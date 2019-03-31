@@ -4,8 +4,8 @@ from apps.utils.icones import icones
 from apps.utils.textos import textos
 from apps.utils.types import RegExps
 
-from apps.vaga_requerida.models import VagaRequerida
-from apps.parametros.models import Parametros
+# from apps.vaga_requerida.models import VagaRequerida
+# from apps.parametros.models import Parametros
 
 
 def setup_icones(request):

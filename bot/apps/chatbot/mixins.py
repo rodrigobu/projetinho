@@ -18,7 +18,7 @@ from chatterbot.conversation import Statement
 class ChatterBotApiView(View):
     """View principal do Bot.
     """
-    logging.basicConfig(level=logging.INFO)
+    # logging.basicConfig(level=logging.INFO)
 
     PERMISSAO_PRODUTO = {
         "GCA": '1',
@@ -216,6 +216,7 @@ class ChatterBotApiView(View):
 
         conversation = Obj()
         conversation.id = request.session.get('conversation_id', 0)
+        print
         existing_conversation = False
         try:
             Conversation.objects.get(id=conversation.id)
@@ -232,6 +233,7 @@ class ChatterBotApiView(View):
             )
 
             for response in responses:
+                print ('response', response)
                 conversation.statements.append(response.statement.serialize())
                 conversation.statements.append(response.response.serialize())
         return conversation
@@ -245,6 +247,7 @@ class ChatterBotApiView(View):
         Retorna os dados correspondente a conversa.
         """
         conversation = self.get_conversation()
+        print ('conversation', conversation)
         return JsonResponse({
             'BOT': self.chatbot().name,
             'conversation': conversation.statements
@@ -265,6 +268,7 @@ class ChatterBotApiView(View):
 
         conversation = self.get_conversation(request)
         response = self.chatbot().get_response(input_data, conversation.id)
+        print ("input_data", input_data)
         if response.extra_data:
             extra_data = response.extra_data.split(',')
             response.extra_data = self.prepara_extra_data(extra_data)
@@ -351,6 +355,28 @@ class ChatCadastro(object):
 
 class ChatConversa(object):
 
+    def lista_produto(self):
+        return (
+            (1, _('GCA')),
+            (2, _('SPA')),
+            (4, _('PCO')),
+            (8, _('TODOS')),
+        )
+
+    def lista_permissao(self):
+        return (
+            (2, _('CONSULTORIA')),
+            (3, _('PUBLICO')),
+            (1, _('SUPORTE')),
+        )
+
+    def tratar_extra(self, permissao, produto):
+        extra = '{produto},{produto},{permissao}'.format(
+            permissao=permissao,
+            produto=produto
+        )
+        return extra
+
     def salvar(self, dados, resposta=None):
         from chatterbot.ext.django_chatterbot.models import Response, Statement
 
@@ -363,8 +389,18 @@ class ChatConversa(object):
         resposta_bot = dados.get('resposta_bot')
         resposta_bot = Statement.objects.get(id=resposta_bot)
 
+        permissao = dados.get('permissao')
+        produto = dados.get('produto')
+
+
+        campo_extra = self.tratar_extra(permissao, produto)
+        print ("resposta_bot1",resposta_bot.extra_data)
+
+        resposta_bot.extra_data = campo_extra
+        print ("resposta_bot",resposta_bot.extra_data)
         if pergunta:
             resposta.statement_id = pergunta.id
         if resposta_bot:
             resposta.response_id = resposta_bot.id
+        resposta_bot.save()
         resposta.save()

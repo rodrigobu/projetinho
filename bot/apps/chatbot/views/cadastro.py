@@ -48,11 +48,15 @@ class CadastroConversaBot(TemplateView, utils_views.MessagesView, ChatConversa):
         context = super().get_context_data(**kwargs)
         context['lista'] = self.get_queryset_from()
         context['title'] = self.get_title()
+        context['lista_produto'] = self.lista_produto()
+        context['lista_permissao'] = self.lista_permissao()
+
 
         return context
 
     def post(self, *args, **kwargs):
-        print ('dados', dados)
+        dados = self.request.POST.copy()
+                
         self.salvar(dados)
         self.success('Conversa do chatbot foi salvo com sucesso')
         return HttpResponseRedirect(reverse(self.url_success))

@@ -70,9 +70,17 @@ class EdicaoConversaBot(TemplateView, utils_views.MessagesView, ChatConversa):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        statement = Statement.objects.get(id=self.get_object().response_id)
+        extra = statement.extra_data.split(',')
+
+        context['produto_id'] = extra[0]
+        context['permissao_id'] = extra[1]
         context['lista'] = self.get_queryset_from()
         context['resposta'] = self.get_object()
         context['title'] = self.get_title()
+        context['lista_produto'] = self.lista_produto()
+        context['lista_permissao'] = self.lista_permissao()
+
         return context
 
     def post(self, *args, **kwargs):

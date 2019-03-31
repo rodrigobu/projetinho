@@ -71,6 +71,9 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+
+                'apps.utils.context_processors.setup_icones',
+                
             ],
             'libraries': {
                 'xenon_core': 'apps.templatetags.xenon_core',

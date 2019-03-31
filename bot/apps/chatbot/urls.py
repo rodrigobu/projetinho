@@ -1,6 +1,6 @@
 from django.urls import path
 
-from apps.chatbot.views import chatbot, cadastro, edicao
+from apps.chatbot.views import chatbot, cadastro, edicao, listagem
 
 
 urlpatterns = [
@@ -40,19 +40,36 @@ urlpatterns = [
         cadastro.cadastro_texto,
         name="chatbot.cadastro.texto"
     ),
+    path('edicao/',
+        edicao.edicao_texto,
+        name='chatbot.edicao.texto'
+    ),
     path('edicao/<slug:id>/',
         edicao.edicao_texto,
         name='chatbot.edicao.texto'
     ),
 
     #cadastro conversa
-    path('cadastro/conversa',
+    path('cadastro/conversa/',
         cadastro.cadastro_conversa,
         name="chatbot.cadastro.conversa"
+    ),
+    path('edicao/conversa/',
+        edicao.edicao_conversa,
+        name='chatbot.edicao.conversa'
     ),
     path('edicao/conversa/<slug:id>/',
         edicao.edicao_conversa,
         name='chatbot.edicao.conversa'
     ),
+    path('listagem/conversa/',
+        listagem.listagem_conversa,
+        name='chatbot.listagem.conversa'
+    ),
+    path('listagem/conversa/json/',
+        listagem.listagem_conversa_json,
+        name='chatbot.listagem.conversa.json'
+    ),
+
 
 ]
