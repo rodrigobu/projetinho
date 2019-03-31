@@ -3,12 +3,13 @@ from django.utils.translation import ugettext as _
 from apps.utils.views.json import JSONView
 from apps.utils.views.requests import RequestUtilsMixin
 from chatterbot.ext.django_chatterbot.models import Statement, Response
-
+from apps.base_conhecimento.models import BaseConhecimentoLog
 
 class ExclusaoView(JSONView):
     ''' View Proxy de exclusão
     '''
     model=None
+    acao = ''
 
     def get_object(self):
         try:
@@ -17,20 +18,25 @@ class ExclusaoView(JSONView):
             return self.model.objects.get(id=id)
         except:
             pass
-    def get_context_data(self, *args, **kwargs):
-        print ("OBJETO", self.get_object())
-        self.get_object().delete()
 
-        # if self.gera_log:
-        #     #Registra o log de exclusao
-        #     from apps.log.models import Log
-        #     log = Log()
-        #     log.log_remover(self.request,
-        #         #obs="Exclusão de registro",
-        #         model=self.model,
-        #         id_obj=pk,
-        #         sql=True
-        #     )
+    def criar_log_exclusao(self, registro, acao, url):
+        log = BaseConhecimentoLog()
+        log.usuario = 1
+        log.acao = 'Exclusão {}'.format(acao)
+        log.url = url
+        log.id_registro = registro
+        log.save()
+
+    def get_context_data(self, *args, **kwargs):
+        url = self.request.META.get("PATH_INFO","")
+        obj = self.get_object()
+        
+        if self.acao == 'conversa':
+            self.criar_log_exclusao(obj.id, obj, url)
+        else:
+            self.criar_log_exclusao(obj.id, self.acao, url)
+
+        self.get_object().delete()
 
         return self.return_ok()
         # return True, ""
@@ -38,6 +44,6 @@ class ExclusaoView(JSONView):
 
 class ExclusaoConversa(ExclusaoView):
     model = Response
-
+    acao = 'conversa'
 
 exclusao_conversa = ExclusaoConversa.as_view()

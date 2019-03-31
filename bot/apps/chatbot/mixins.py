@@ -9,9 +9,10 @@ from chatterbot import ChatBot
 from chatterbot.utils import input_function, get_response_time
 from chatterbot.logic import LogicAdapter
 from chatterbot.ext.django_chatterbot import settings
+
 from chatterbot.ext.django_chatterbot.models import Conversation, Response
 from chatterbot.conversation import Statement
-
+from apps.base_conhecimento.models import BaseConhecimentoLog
 # from apps.vaga.models import VagaEntrevista, VagaEntrevistaRespostas
 
 
@@ -338,20 +339,26 @@ class ChatCadastro(object):
         )
         return extra
 
-    def salvar(self, dados, statement=None):
+    def criar_log_cadastro(self, obj, acao, url):
+        log = BaseConhecimentoLog()
+        log.usuario = 1
+        log.acao = acao
+        log.url = url
+        log.id_registro = obj.id
+        log.save()
+
+    def salvar(self, request, statement=None):
         from chatterbot.ext.django_chatterbot.models import Statement
 
+        dados = request.POST.copy()
+        url = request.META.get("PATH_INFO","")
+        acao = 'Edição do Texto'
         if not statement:
+            acao = 'Cadastro dos Textos'
             statement = Statement()
         statement.text = dados.get('msg')
-        permissao = dados.get('permissao')
-        produto = dados.get('produto')
-        campo_extra = self.tratar_extra(permissao, produto)
-        if not campo_extra:
-            campo_extra = ''
-        statement.extra_data = campo_extra
         statement.save()
-
+        self.criar_log_cadastro(statement, acao, url)
 
 class ChatConversa(object):
 
@@ -377,10 +384,16 @@ class ChatConversa(object):
         )
         return extra
 
-    def salvar(self, dados, resposta=None):
+    def salvar(self, request, resposta=None):
         from chatterbot.ext.django_chatterbot.models import Response, Statement
+        log = BaseConhecimentoLog()
 
+        dados = request.POST.copy()
+        url = request.META.get("PATH_INFO","")
+
+        acao = 'Edição da Conversa'
         if not resposta:
+            acao = 'Cadastro da Conversa'
             resposta = Response()
 
         pergunta_usuario = dados.get('pergunta_usuario')
@@ -394,13 +407,18 @@ class ChatConversa(object):
 
 
         campo_extra = self.tratar_extra(permissao, produto)
-        print ("resposta_bot1",resposta_bot.extra_data)
-
         resposta_bot.extra_data = campo_extra
-        print ("resposta_bot",resposta_bot.extra_data)
+
         if pergunta:
             resposta.statement_id = pergunta.id
         if resposta_bot:
             resposta.response_id = resposta_bot.id
+
         resposta_bot.save()
         resposta.save()
+
+        log.usuario = 1
+        log.acao = acao
+        log.url = url
+        log.id_registro = resposta.id
+        log.save()

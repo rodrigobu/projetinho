@@ -23,10 +23,9 @@ class CadastroTextoBot(TemplateView, utils_views.MessagesView, ChatCadastro):
         return context
 
     def post(self, *args, **kwargs):
-        dados = self.request.POST.copy()
 
+        self.salvar(self.request)
         self.success('Texto do Bot salvo')
-        self.salvar(dados)
         return HttpResponseRedirect(reverse(self.url_success))
 
 cadastro_texto = CadastroTextoBot.as_view()
@@ -51,13 +50,11 @@ class CadastroConversaBot(TemplateView, utils_views.MessagesView, ChatConversa):
         context['lista_produto'] = self.lista_produto()
         context['lista_permissao'] = self.lista_permissao()
 
-
         return context
 
     def post(self, *args, **kwargs):
-        dados = self.request.POST.copy()
-                
-        self.salvar(dados)
+
+        self.salvar(self.request)
         self.success('Conversa do chatbot foi salvo com sucesso')
         return HttpResponseRedirect(reverse(self.url_success))
 

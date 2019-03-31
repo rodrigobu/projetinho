@@ -31,16 +31,13 @@ class EdicaoTextoBot(TemplateView, utils_views.MessagesView, ChatCadastro):
         extra = statement.extra_data.split(',')
         context['lista_produto'] = self.lista_produto()
         context['lista_permissao'] = self.lista_permissao()
-        context['produto_id'] = extra[0]
-        context['permissao_id'] = extra[1]
         context['texto_value'] = statement.text
         context['title'] = self.get_title()
         return context
 
     def post(self, *args, **kwargs):
-        dados = self.request.POST.copy()
+        self.salvar(self.request, self.get_object())
         self.success('Texto do Bot salvo')
-        self.salvar(dados, self.get_object())
         return HttpResponseRedirect(self.get_url_sucesso())
 
 edicao_texto = EdicaoTextoBot.as_view()
@@ -84,8 +81,7 @@ class EdicaoConversaBot(TemplateView, utils_views.MessagesView, ChatConversa):
         return context
 
     def post(self, *args, **kwargs):
-        dados = self.request.POST.copy()
-        self.salvar(dados, self.get_object())
+        self.salvar(self.request, self.get_object())
         self.success('Texto do Bot salvo')
         return HttpResponseRedirect(self.get_url_sucesso())
 

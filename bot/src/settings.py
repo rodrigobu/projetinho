@@ -42,7 +42,8 @@ INSTALLED_APPS = [
 
     'chatterbot.ext.django_chatterbot',
     'apps.home',
-    'apps.chatbot'
+    'apps.chatbot',
+    'apps.base_conhecimento'
 
 ]
 
@@ -73,7 +74,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
 
                 'apps.utils.context_processors.setup_icones',
-                
+
             ],
             'libraries': {
                 'xenon_core': 'apps.templatetags.xenon_core',

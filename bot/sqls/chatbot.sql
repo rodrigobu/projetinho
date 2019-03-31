@@ -16,10 +16,11 @@ CREATE TABLE base_conhecimento (
 
 CREATE TABLE base_conhecimento_log (
 	id SERIAL NOT NULL,
-	data_cadastro timestamp with time zone NOT NULL DEFAULT ('now'::text)::date,
+	data timestamp with time zone NOT NULL DEFAULT ('now'::text)::date,
 	usuario integer,
-	data_atualizacao timestamp with time zone NOT NULL DEFAULT ('now'::text)::date,
 	acao text NOT NULL,
+	url character varying (200),
+	id_registro integer NULL,
 	CONSTRAINT base_conhecimento_log_pkey PRIMARY KEY (id)
 
 );
