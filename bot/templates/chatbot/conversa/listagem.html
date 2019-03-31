@@ -30,10 +30,14 @@
 <script>
 var URL_CONSULTA = '{% url "chatbot.listagem.conversa.json" %}';
 var URL_EDICAO = "{% url 'chatbot.edicao.conversa' %}"
+var URL_EXCLUSAO = "{% url 'chatbot.exclusao.conversa' %}"
 var ICON_DELETE = '{{ ICONES.delete }}';
 var ICON_EDIT = '{{ ICONES.edit }}'
 var TABELA_CONSULTA = undefined;
 var TITULO_EDIT = 'Edição da conversa do bot';
+var TITULO_EXC = 'Exclusão da conversa do bot';
+var ALERTA_EXC = 'Deseja realmente excluir a Conversa do bot'
+var ALERTA_SUC_EXC = 'Conversa excluída com sucesso.'
 
 function criar_conversa(){
   TABELA_CONSULTA = $.DataTableXenon({
@@ -49,8 +53,8 @@ function criar_conversa(){
            'class':'col-md-1 text-center md_icons',
            "mRender": function ( data, type, full ) {
              let HTML = ''
-             HTML += '<a href="'+ URL_EDICAO + full["bot_id"] + '" title="'+TITULO_EDIT+'" class="text-gray "><i class="'+ICON_EDIT+'"></i> </a>';
-             // HTML += '<a href="#" title="'+TITULO_EXC+'" class="text-gray " onclick="excluir_registro(\''+full["slug"]+'\')"> <i class="'+ICON_DELETE+'"></i></a>';
+             HTML += '<a href="'+ URL_EDICAO + full.id + '" title="'+TITULO_EDIT+'" class="text-gray "><i class="'+ICON_EDIT+'"></i> </a>';
+             HTML += '<a href="#" title="'+TITULO_EXC+'" class="text-gray " onclick="excluir_registro(\''+full["id"]+'\')"> <i class="'+ICON_DELETE+'"></i></a>';
              return HTML;
            }
        },
@@ -124,7 +128,7 @@ $(function() {
     criar_conversa();
 });
 
-function excluir_registro(slug_registro){
+function excluir_registro(registro){
 
   $.dialogs.confirm('', ALERTA_EXC, function() {
     $.ajax({
@@ -132,7 +136,7 @@ function excluir_registro(slug_registro){
       type : 'get',
       dataType : 'json',
       async : false,
-      data : { num : slug_registro },
+      data : { id : registro },
       success : function(dados) {
         $.dialogs.success(ALERTA_SUC_EXC);
         consultar();

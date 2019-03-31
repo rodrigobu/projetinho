@@ -17,6 +17,7 @@ class ListaConversaChat(TemplateView, utils_views.MessagesView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['title'] = self.get_title()
         return context
 
 listagem_conversa = ListaConversaChat.as_view()
@@ -33,7 +34,7 @@ class ListagemConversaJSON(utils_views.JSONView):
         Retorna todas as filiais cadastrados no sistema em formato dict.
         '''
         SQL = '''
-            SELECT bot_resposta.id AS bot_id,
+            SELECT bot_resposta.id AS id,
                 bot_perg.text AS pergunta,
                 bot_resp.text AS resposta,
                 bot_resp.extra_data as extra_data
