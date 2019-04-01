@@ -203,7 +203,7 @@ function submitInput(input_val, input_resp) {
   $submit.done(function(statement) {
     createRowBot(statement.text);
     // Clear the input field
-    console.log(statement.extra_data.permissao);
+    console.log(statement.extra_data);
     if (statement.extra_data.is_alternativa) {
       var input_btn = '';
       if (statement.extra_data.alternativas.length!=0) {
@@ -211,8 +211,8 @@ function submitInput(input_val, input_resp) {
           input_btn += '<input type="button" class="btn btn-primary js-btn-alternativa col-md-2 col-xs-12" value="' + value[0] + '" title="' + value[0] + '" onclick="responder_alternativa(this)"/>';
         })
       } else {
-        input_btn = '<input type="button" class="btn btn-success js-btn-alternativa col-md-2 col-xs-12" value="'+TXT_SIM+'" onclick="responder_alternativa(this)"/>' +
-          '<input type="button" class=" btn btn-danger js-btn-alternativa col-md-2 col-xs-12" value="'+TXT_NAO+'" onclick="responder_alternativa(this)"/>';
+        input_btn = '<input type="button" class="btn btn-success js-btn-alternativa col-md-2 col-xs-12" value="SIM" onclick="responder_alternativa(this)"/>' +
+          '<input type="button" class=" btn btn-danger js-btn-alternativa col-md-2 col-xs-12" value="Não" onclick="responder_alternativa(this)"/>';
       }
 
       chat_input.empty();

@@ -109,13 +109,18 @@ class ChatterBotApiView(View):
 
         return self.PERMISSAO[bot], self.PERMISSAO[usuario]
 
-    def prepara_extra_data(self, extra_data):
+    def prepara_extra_data(self, data):
         ''' Função formata os dados de cada pergunta no formato json
         '''
         return json.dumps({
-            'produto' : extra_data[0],
-            'permissao_produto': extra_data[1],
-            'permissao' : extra_data[2],
+            'produto' : data[0],
+            'permissao_produto': data[1],
+            'permissao' : data[2],
+            # 'is_alternativa': data[3] == 'True',
+            # 'alternativas': [('CDC', 'CDC'),
+            #     ('Avaliação de desempenho', 'Avaliação de desempenho'),
+            #     ('TESTE', 'TESTE'),
+            #     ('RELATORIO', 'RELATORIO')]
         })
 
     def get_dados_usuario(self, kwargs):
@@ -130,38 +135,61 @@ class ChatterBotApiView(View):
         ''' Verifica para qual conversa o usuario e retorna a respota indicada
         para o perfil do usuario
         '''
+        permissao_ti = tipo_user == 'TI' and tipo_user_bot == "TI"
+        permissao_consultoria = tipo_user == 'CONSULTORIA' and tipo_user_bot == 'CONSULTORIA'
+        permissao_publico = tipo_user_bot == "TODOS"
+
         if produto == 'GCA':
             print ('PRODUTO GCA')
-            if self.tem_permissao_gca(perm_prod_bot) and self.tem_permissao_gca(permissao_produto):
-                print ("TEM PERMISSAO DO GCA")
-                if tipo_user == 'TI' and tipo_user_bot == "TI":
-                    print ("TIPO TI")
-                elif tipo_user == 'CONSULTORIA' and tipo_user_bot == 'CONSULTORIA':
-                    print ("TIPO CONSULTORIA")
-                elif tipo_user == 'PUBLICO' and tipo_user_bot == "PUBLICO":
-                    print ("TIPO PUBLICO")
+            # if self.tem_permissao_gca(perm_prod_bot) and self.tem_permissao_gca(permissao_produto):
+            print ("TEM PERMISSAO DO GCA")
+
+            if permissao_ti:
+                print ("TIPO TI")
+                return True
+            elif permissao_consultoria:
+                print ("TIPO CONSULTORIA")
+                return True
+            elif permissao_publico:
+                print ("TIPO PUBLICO")
+                return True
+            else:
+                print ("PERMISSA NEGADA")
+                return False
 
         if produto == 'SPA':
             print ('PRODUTO SPA')
-            if self.tem_permissao_spa(perm_prod_bot) and self.tem_permissao_spa(permissao_produto):
-                print ("TEM PERMISSAO DO SPA")
-                if tipo_user == 'TI':
-                    print ("TIPO TI")
-                elif tipo_user == 'CONSULTORIA':
-                    print ("TIPO CONSULTORIA")
-                elif tipo_user == 'PUBLICO':
-                    print ("TIPO PUBLICO")
+            # if self.tem_permissao_spa(perm_prod_bot) and self.tem_permissao_spa(permissao_produto):
+            print ("TEM PERMISSAO DO SPA")
+            if permissao_ti:
+                print ("TIPO TI")
+                return True
+            elif permissao_consultoria:
+                print ("TIPO CONSULTORIA")
+                return True
+            elif permissao_publico:
+                print ("TIPO PUBLICO")
+                return True
+            else:
+                print ("PERMISSA NEGADA")
+                return False
 
         if produto == 'PCO':
             print ('PRODUTO PCO')
-            if self.tem_permissao_pco(perm_prod_bot) and tem_permissao_pco(permissao_produto):
-                print ("TEM PERMISSAO DO PCO")
-                if tipo_user == 'TI':
-                    print ("TIPO TI")
-                elif tipo_user == 'CONSULTORIA':
-                    print ("TIPO CONSULTORIA")
-                elif tipo_user == 'PUBLICO':
-                    print ("TIPO PUBLICO")
+            # if self.tem_permissao_pco(perm_prod_bot) and tem_permissao_pco(permissao_produto):
+            print ("TEM PERMISSAO DO PCO")
+            if permissao_ti:
+                print ("TIPO TI")
+                return True
+            elif permissao_consultoria:
+                print ("TIPO CONSULTORIA")
+                return True
+            elif permissao_publico:
+                print ("TIPO PUBLICO")
+                return True
+            else:
+                print ("PERMISSA NEGADA")
+                return False
 
     def adaptadores(self):
         """ Função que traz as respostas do bot global
@@ -275,15 +303,20 @@ class ChatterBotApiView(View):
             response.extra_data = self.prepara_extra_data(extra_data)
 
             tipo_user_bot, tipo_user = self.get_tipo_usuario(extra_data[2], tipo_user)
+            print (tipo_user_bot)
             produto_bot, produto_user = self.get_produto(extra_data[0], produto)
+            print ("produto_user", produto_user)
             permissao_bot = extra_data[1]
+            print ("produto_bot", produto_bot)
 
             produto_gca = produto_bot == 'GCA' and  produto_user == 'GCA'
             produto_spa = produto_bot == "SPA" and  produto_user == 'SPA'
             produto_pco = produto_bot == "PCO" and produto_user == 'PCO'
 
+            conversa = False
+            
             if produto_gca:
-                self.verificar_conversa(
+                conversa = self.verificar_conversa(
                     'GCA',
                     permissao_user,
                     permissao_bot,
@@ -291,7 +324,7 @@ class ChatterBotApiView(View):
                     tipo_user_bot
                 )
             elif produto_spa:
-                self.verificar_conversa(
+                conversa = self.verificar_conversa(
                     'SPA',
                     permissao_user,
                     permissao_bot,
@@ -299,16 +332,19 @@ class ChatterBotApiView(View):
                     tipo_user_bot
                 )
             elif produto_pco:
-                self.verificar_conversa(
+                conversa = self.verificar_conversa(
                     'PCO',
                     permissao_user,
                     permissao_bot,
                     tipo_user,
                     tipo_user_bot
                 )
-            else:
+            elif produto_bot == 'TODOS':
+                conversa = True
+                response.text = 'TODOS'
+
+            if not conversa:
                 response.text = 'Por favor tente outra forma'
-        print ("RESPONSE", response.extra_data)
         response_data = response.serialize()
 
         return JsonResponse(response_data, status=200)
@@ -404,7 +440,7 @@ class ChatConversa(object):
 
         permissao = dados.get('permissao')
         produto = dados.get('produto')
-        
+
 
         campo_extra = self.tratar_extra(permissao, produto)
         resposta_bot.extra_data = campo_extra
