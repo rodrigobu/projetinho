@@ -13,6 +13,10 @@ from chatterbot.ext.django_chatterbot import settings
 from chatterbot.ext.django_chatterbot.models import Conversation, Response
 from chatterbot.conversation import Statement
 from apps.base_conhecimento.models import BaseConhecimentoLog
+from apps.utils import views as utils_views
+from apps.base_conhecimento.models.base_conhecimento_alternativas import BaseConhecimentoAlternativas
+
+
 # from apps.vaga.models import VagaEntrevista, VagaEntrevistaRespostas
 
 
@@ -112,15 +116,23 @@ class ChatterBotApiView(View):
     def prepara_extra_data(self, data):
         ''' Função formata os dados de cada pergunta no formato json
         '''
+        alt = BaseConhecimentoAlternativas
+        # alternativa = []
+        # print ('data',data)
+        # for dt in data[4]:
+        #     print ("dt",dt)
+        #     dt_alt = alt.objects.get(id=dt).alternativa
+        #     alternativa.append((dt_alt,dt_alt))
+        # print (alternativa)
         return json.dumps({
             'produto' : data[0],
             'permissao_produto': data[1],
             'permissao' : data[2],
-            # 'is_alternativa': data[3] == 'True',
-            # 'alternativas': [('CDC', 'CDC'),
-            #     ('Avaliação de desempenho', 'Avaliação de desempenho'),
-            #     ('TESTE', 'TESTE'),
-            #     ('RELATORIO', 'RELATORIO')]
+            'is_alternativa': data[3],
+            'alternativas': [('CDC', 'CDC'),
+                ('Avaliação de desempenho', 'Avaliação de desempenho'),
+                ('TESTE', 'TESTE'),
+                ('RELATORIO', 'RELATORIO')]
         })
 
     def get_dados_usuario(self, kwargs):
@@ -314,7 +326,7 @@ class ChatterBotApiView(View):
             produto_pco = produto_bot == "PCO" and produto_user == 'PCO'
 
             conversa = False
-            
+
             if produto_gca:
                 conversa = self.verificar_conversa(
                     'GCA',
@@ -371,7 +383,7 @@ class ChatCadastro(object):
     def tratar_extra(self, permissao, produto):
         extra = '{produto},{produto},{permissao}'.format(
             permissao=permissao,
-            produto=produto
+            produto=produto,
         )
         return extra
 
@@ -396,7 +408,7 @@ class ChatCadastro(object):
         statement.save()
         self.criar_log_cadastro(statement, acao, url)
 
-class ChatConversa(object):
+class ChatConversa(utils_views.RequestUtilsMixin):
 
     def lista_produto(self):
         return (
@@ -413,18 +425,21 @@ class ChatConversa(object):
             (1, _('SUPORTE')),
         )
 
-    def tratar_extra(self, permissao, produto):
-        extra = '{produto},{produto},{permissao}'.format(
+    def tratar_extra(self, permissao, produto, is_alt, alternativa):
+        extra = '{produto},{produto},{permissao}, {is_alt}, {alternativa}'.format(
             permissao=permissao,
-            produto=produto
+            produto=produto,
+            is_alt=is_alt,
+            alternativa=alternativa
         )
         return extra
 
     def salvar(self, request, resposta=None):
         from chatterbot.ext.django_chatterbot.models import Response, Statement
         log = BaseConhecimentoLog()
-
+        alt = BaseConhecimentoAlternativas
         dados = request.POST.copy()
+        print ('dados', dados)
         url = request.META.get("PATH_INFO","")
 
         acao = 'Edição da Conversa'
@@ -440,18 +455,25 @@ class ChatConversa(object):
 
         permissao = dados.get('permissao')
         produto = dados.get('produto')
-
-
-        campo_extra = self.tratar_extra(permissao, produto)
-        resposta_bot.extra_data = campo_extra
+        alternativa = dados.get('alternativa')
+        is_alt = self.get_check_by_request('tem_alternativa')
 
         if pergunta:
             resposta.statement_id = pergunta.id
         if resposta_bot:
             resposta.response_id = resposta_bot.id
 
-        resposta_bot.save()
         resposta.save()
+        alternativas = alternativa.split(",")
+        for alternativa in alternativas:
+            alt.objects.create(resposta=resposta.id, alternativa=alternativa)
+        alts = alt.objects.filter(resposta=resposta.id)
+        alternativas = []
+        for alt in alts:
+            alternativas.append(alt.id)
+        campo_extra = self.tratar_extra(permissao, produto, is_alt=is_alt, alternativa=alternativas)
+        resposta_bot.extra_data = campo_extra
+        resposta_bot.save()
 
         log.usuario = 1
         log.acao = acao

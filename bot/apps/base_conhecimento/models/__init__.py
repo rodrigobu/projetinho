@@ -1,1 +1,2 @@
 from .base_conhecimento_log import BaseConhecimentoLog
+from .base_conhecimento_alternativas import BaseConhecimentoAlternativas

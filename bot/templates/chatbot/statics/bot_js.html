@@ -23,7 +23,7 @@ var chatNotificacao = $(".chat_notificacao");
 var chat_input = $("#chat_input");
 console.log(chat_input);
 const input_text = function() {
-  let _input_text =
+  var _input_text =
     '<input type="text" id="input_text" class="form-control chat_text chat_text_entrevista col-md-6  col-xs-12"  placeholder="'+TXT_DIGITE+'..." />' +
     '<button type="button" class="btn btn-info chat_enviar">' +
     '<i class="fa fa-send-o"></i>' +
@@ -209,14 +209,20 @@ function submitInput(input_val, input_resp) {
       if (statement.extra_data.alternativas.length!=0) {
         $.each(statement.extra_data.alternativas, function(idx, value) {
           input_btn += '<input type="button" class="btn btn-primary js-btn-alternativa col-md-2 col-xs-12" value="' + value[0] + '" title="' + value[0] + '" onclick="responder_alternativa(this)"/>';
+
         })
       } else {
         input_btn = '<input type="button" class="btn btn-success js-btn-alternativa col-md-2 col-xs-12" value="SIM" onclick="responder_alternativa(this)"/>' +
           '<input type="button" class=" btn btn-danger js-btn-alternativa col-md-2 col-xs-12" value="Não" onclick="responder_alternativa(this)"/>';
       }
 
+      let _input_text =
+      '<input type="text" style="left: 0.4%; width: 99.3%; margin-top: 0.5%;" id="input_text" class="form-control chat_text chat_text_entrevista col-md-6  col-xs-12"  placeholder="'+TXT_DIGITE+'..." />' ;
+
+
       chat_input.empty();
       chat_input.append(input_btn);
+      chat_input.append(_input_text);
     } else {
       if (statement.extra_data.respondida) {
         chat_input.empty();

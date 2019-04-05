@@ -31,7 +31,7 @@ class BaseConhecimentoLog(models.Model):
 
     class Meta:
         db_table = "base_conhecimento_log"
-        app_label = 'bbase_conhecimento'
+        app_label = 'base_conhecimento'
         verbose_name = "Base Conhecimento Log"
         ordering = ['-data','usuario','acao']
         get_latest_by = 'id'

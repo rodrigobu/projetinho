@@ -24,3 +24,9 @@ CREATE TABLE base_conhecimento_log (
 	CONSTRAINT base_conhecimento_log_pkey PRIMARY KEY (id)
 
 );
+
+CREATE TABLE  base_conhecimento_alternativas(
+	id SERIAL NOT NULL,
+	resposta INTEGER NOT NULL,
+	alternativa character varying(150) NULL
+);

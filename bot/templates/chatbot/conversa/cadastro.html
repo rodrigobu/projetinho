@@ -26,7 +26,13 @@
 				  <div class="row">
 					  {% select_simple label='Permissão do Usuário' name='permissao' cols='col-md-3' selected_id=permissao_id required=True options=lista_permissao %}
 					  {% select_simple label='Tipo do Produto' name='produto' cols='col-md-3' selected_id=produto_id required=True options=lista_produto %}
-				  </div>
+					  {% switch label='Tem Alternativas?' cols="col-md-12" name="tem_alternativa"  id="tem_alternativa" checked=param.usa_controle_ip %}
+					  <div id="div_alternativa">
+						  {% textarea label='Alternativas' name='alternativa' id="" value=texto_value required=False linhas=3 class="editor1" %}
+
+					  </div>
+
+  				  </div>
 
                   <div class="row">
 	                  {% select_simple label='Pergunta do Usuário' name='pergunta_usuario' cols='col-md-6' selected_id=resposta.statement_id required=True list=lista %}
@@ -56,4 +62,18 @@
 {% block custom_js %}
 {% include 'statics/js/datatables.html' %}
 {% include "statics/js/formularios.html" %}
+<script>
+
+$("#div_alternativa").hide();
+$(function(){
+	$("#tem_alternativa").change(function(){
+		if ($("#tem_alternativa").is(":checked")) {
+			$("#div_alternativa").show();
+		}else {
+			$("#div_alternativa").hide();
+		}
+	})
+})
+</script>
+
 {% endblock  %}

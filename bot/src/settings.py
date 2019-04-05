@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'chatterbot.ext.django_chatterbot',
+    'apps',
     'apps.home',
     'apps.chatbot',
     'apps.base_conhecimento'
