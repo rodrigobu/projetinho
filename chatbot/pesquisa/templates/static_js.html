@@ -20,9 +20,9 @@
 
 <script>
   {% if entrevista %}
-    var chatterbotUrl = '{% url "chatterbot_entrevista" %}';
+    var chatterbotUrl = 'localhost:8000/chatbot/json/1/8/2';
   {% else %}
-    var chatterbotUrl = '{% url "chatterbot" %}';
+    var chatterbotUrl = 'localhost:8000/chatbot/json/1/8/2';
   {% endif%}
   var saveMediaURL = '{% url "audio" %}';
   var csrftoken = Cookies.get('csrftoken');
@@ -147,7 +147,7 @@
     let file = new File([blob], filename, { type: mime, lastModified: Date.now() });
 
     let msgReceived = `Recebi o seu ${typeText}!`;
-    
+
     formData.append('file', file);
 
     $.ajax({
@@ -182,7 +182,7 @@
       input_text();
       initEventsInputText();
     }
-  
+
   function createVideoSubmit(e) {
     if (!e) e = window.event;
     e.stopPropagation();
